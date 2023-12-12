@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import {Link} from 'react-router-dom'
+import logout from '../utils/auth'
 
 export default function Header({ user }) {
 

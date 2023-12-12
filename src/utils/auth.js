@@ -21,7 +21,7 @@ const url = "http://localhost:5000/api/"
         }
     } catch(err) {
         console.error("Error", err)
-        return { err: "Could not access database" }
+        return { err, message: "Could not access database"}
     }
 }
 

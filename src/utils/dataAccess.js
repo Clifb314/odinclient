@@ -110,7 +110,7 @@ export async function googleAuth() {
 
   } catch(err) {
     console.error("Error", err);
-    return { err: "Could not access database" }
+    return { err, message: "Could not access database" }
   }
 }
 
