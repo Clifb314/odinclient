@@ -1,4 +1,5 @@
 import auth from "../../../../blogAPI/client/src/utils/auth";
+import { googleAuth } from "../../../controllers/userController";
 import { replaceOne } from "../../../models/userModel";
 import { authHeader, authJson } from "./authHeader";
 
@@ -96,9 +97,26 @@ export async function editAccount(body) {
 }
 
 // need to add google auth
+export async function googleAuth() {
+  try {
+    const response = await fetch(USERURL + 'google', {
+      method: "GET",
+      mode: 'cors',
+      headers: authHeader(),
+    })
+    const data = response.json()
+    if (!response.ok) return {message: data.message, err: data.err}
+    else return data
+
+  } catch(err) {
+    console.error("Error", err);
+    return { err: "Could not access database" }
+  }
+}
 
 export async function uploadIcon(image) {
-  //image has to be from input type file, wrapped in new formdata (?)
+  //image has to be from input type=file, wrapped in new formdata (?)
+  //or send as blob
   try {
     const response = await fetch(USERURL + "icon", {
       method: "PUT",
