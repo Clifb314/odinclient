@@ -26,10 +26,10 @@ export default function Login() {
 
 
     return (
-        <div className='loginPage'>
-            <input name='username' id='username' value={creds.username} />
-            <input name='password' type='password' id='password' value={creds.password} />
-        </div>
+        <form className='loginForm' onSubmit={handleSubmit}>
+            <input name='username' id='username' value={creds.username} onChange={handleChange} />
+            <input name='password' type='password' id='password' value={creds.password} onChange={handleChange} />
+        </form>
     )
 
 }

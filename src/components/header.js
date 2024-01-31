@@ -17,7 +17,7 @@ export default function Header({ user }) {
                 <ul className="authLinks">
                     <li><Link to='/inbox'>Inbox</Link></li>
                     <li><Link to='/account'>Account</Link></li>
-                    <li><Link to='/'>Log Out</Link></li>
+                    <li><Link onClick={logout} to='/'>Log Out</Link></li>
                 </ul>
                 :
                 <ul className="guestLinks">

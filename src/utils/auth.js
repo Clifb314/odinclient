@@ -15,7 +15,7 @@ const url = "http://localhost:5000/api/"
         if (!response.ok) {
             return data.message
         } else {
-            localStorage.setItem('user', JSON.stringify(data))
+            localStorage.setItem('user', JSON.stringify(data.user))
             setTimeout(logout, 15 * 60 * 1000)
             return {message: 'Logged in', user: data.user}
         }

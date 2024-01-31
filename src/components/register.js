@@ -39,12 +39,12 @@ export default function Register() {
         <div className='register'>
             <form className='registerForm' onSubmit={handleSubmit}>
                 <input name='username' id='username' value={userInfo.username} />
-                <input name='fName' id='fName' value={userInfo.fName} />
-                <input name='lName' id='lName' value={userInfo.lName} />
-                <input name='email' id='email' value={userInfo.email} />
-                <input name='bday' id='bday' type='date' value={username.bday} />
-                <input name='password' id='password' type='password' value={userInfo.password} />
-                <input name='checkPW' id='checkPW' type='password' value={userInfo.checkPW} />
+                <input name='fName' id='fName' value={userInfo.fName} onChange={handleChange} />
+                <input name='lName' id='lName' value={userInfo.lName} onChange={handleChange} />
+                <input name='email' id='email' value={userInfo.email} onChange={handleChange} />
+                <input name='bday' id='bday' type='date' value={username.bday} onChange={handleChange} />
+                <input name='password' id='password' type='password' value={userInfo.password} onChange={handleChange} />
+                <input name='checkPW' id='checkPW' type='password' value={userInfo.checkPW} onChange={handleChange} />
                 <button type='submit'>Submit</button>
                 <button type='button' onClick={getGoogleInfo}>Link with Google!</button>
             </form>

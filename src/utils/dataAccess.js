@@ -440,6 +440,7 @@ export async function getInboxList() {
 }
 
 export async function inboxDetail(id) {
+  //return message chain
   try {
     const response = await fetch(INBOXURL + id, {
       method: "GET",

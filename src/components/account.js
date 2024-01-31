@@ -14,12 +14,12 @@ export default function Account({ user }) {
         const fetchUser = dataAccess.getAccount()
         if (fetchUser.message) setMyPage(null)
         else {
-            setMyPage({...fetchUser, password: '', checkPW: ''})
+            setMyPage({...fetchUser, password: '', checkPW: '', oldPW: ''})
             //set icon from blob?
         } 
 
         return () => setMyPage(null)
-    }, [])
+    }, [editting])
 
     function toggle() {
         editting ? setEditting(false) : setEditting(true)
@@ -34,15 +34,21 @@ export default function Account({ user }) {
 
     }
 
+    function handleChange(e) {
+        const { value, name } = e.target
+        setMyPage({...myPage, [name]: value})
+    }
+
 
     const display = myPage ? 
     <form id='accountForm' onSubmit={handleSubmit}>
-        <input id='username' name='username' value={myPage.username} disabled={!editting} />
-        <input id='email' name='email' value={myPage.userDetails.email} disabled={!editting} />
-        <input id='name' name='name' value={myPage.userDetails.fullName} disabled={!editting} />
-        <input id='bday' name='bday' value={myPage.userDetails.birthdate} disabled={!editting} />
-        <input id='password' name='password' type='password' value={myPage.password} hidden={!editting} />
-        <input id='checkPW' name='checkPW' type='password' value={myPage.checkPW} hidden={!editting} />
+        <input id='username' name='username' value={myPage.username} disabled={!editting} onChange={handleChange} />
+        <input id='email' name='email' value={myPage.userDetails.email} disabled={!editting} onChange={handleChange} />
+        <input id='name' name='name' value={myPage.userDetails.fullName} disabled={!editting} onChange={handleChange} />
+        <input id='bday' name='bday' value={myPage.userDetails.birthdate} disabled={!editting} onChange={handleChange} />
+        <input id='password' name='password' type='password' value={myPage.password} hidden={!editting} onChange={handleChange} />
+        <input id='checkPW' name='checkPW' type='password' value={myPage.checkPW} hidden={!editting} onChange={handleChange} />
+        <input id='oldPW' name='oldPW' type='password' value={myPage.oldPW} hidden={!editting} onChange={handleChange} />
         <p>Friends: {myPage.friends.length}</p>
         <p>Posts: {myPage.posts.length}</p>
         <button type='button' hidden={editting} onClick={toggle}>Edit?</button>
