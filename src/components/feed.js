@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import postList from '../utils/dataAccess'
 import PostCard from './postCard'
 
-export default function feed({sorting}) {
+export default function feed({sorting, populateReply}) {
     const [posts, setPosts] = useState([])
 
 
@@ -19,11 +19,13 @@ export default function feed({sorting}) {
     }, [])
 
 
-    const display = posts.length > 0 ?
-    posts.map(post => {
-        return <PostCard post={post} />
-    }) :
-    <p>Feed is empty..</p>
+    const display = posts.length > 0 
+    ? <ul className='feedList'>
+        {posts.map(post => {
+            return <li><PostCard key={post._id} post={post} /></li>
+        })}
+    </ul> 
+    : <p>Feed is empty..</p>
 
 
     return (

@@ -278,9 +278,10 @@ export async function postDetail(id) {
 
 /*     -----Comment functions-----     */
 
-export async function createComment(body) {
+export async function createComment(body, postid) {
+  const query = new URLSearchParams({ postid })
   try {
-    const response = await fetch(COMURL + "post", {
+    const response = await fetch(COMURL + "post/" + query, {
       method: "POST",
       mode: "cors",
       body: JSON.stringify(body),
