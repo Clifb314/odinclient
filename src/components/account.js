@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import * as dataAccess from '../utils/dataAccess'
+import FriendsList from './FriendsList'
+import PostCard from './postCard'
 
 export default function Account({ user }) {
     const [myPage, setMyPage] = useState(null)
@@ -11,7 +13,7 @@ export default function Account({ user }) {
     }
 
     useEffect(() => {
-        const fetchUser = dataAccess.getAccount()
+        const fetchUser = getUser()
         if (fetchUser.message) setMyPage(null)
         else {
             setMyPage({...fetchUser, password: '', checkPW: '', oldPW: ''})
@@ -39,6 +41,11 @@ export default function Account({ user }) {
         setMyPage({...myPage, [name]: value})
     }
 
+    const myPosts = myPage.posts?.length > 0
+    ? <ul className='feedList'>{myPage.posts.map(post => {
+        return <li><PostCard post={post} /></li>
+    })}</ul>
+    : <p>Nothing's here... Try posting something!</p>
 
     const display = myPage ? 
     <form id='accountForm' onSubmit={handleSubmit}>
@@ -49,7 +56,6 @@ export default function Account({ user }) {
         <input id='password' name='password' type='password' value={myPage.password} hidden={!editting} onChange={handleChange} />
         <input id='checkPW' name='checkPW' type='password' value={myPage.checkPW} hidden={!editting} onChange={handleChange} />
         <input id='oldPW' name='oldPW' type='password' value={myPage.oldPW} hidden={!editting} onChange={handleChange} />
-        <p>Friends: {myPage.friends.length}</p>
         <p>Posts: {myPage.posts.length}</p>
         <button type='button' hidden={editting} onClick={toggle}>Edit?</button>
         <button type='submit' hidden={!editting}>Submit</button>
@@ -60,6 +66,14 @@ export default function Account({ user }) {
 
 
     return (
-        <div className='accountPage'>{display}</div>
+        <div className='userDetails'>
+            <div className='accountPage'>{display}</div>
+            <div>
+                <FriendsList friends={myPage.friends} />
+            </div>
+            <div className='feed'>
+                {myPosts}
+            </div>
+        </div>
     )
 }

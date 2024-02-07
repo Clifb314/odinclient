@@ -1,9 +1,9 @@
 import React, { useRef, useState } from 'react'
-import { likePost } from '../utils/dataAccess'
+import { likePost, delPost } from '../utils/dataAccess'
 import CommentCard from './commentCard'
 
 
-export default function PostCard({post, populateReply}) {
+export default function PostCard({post, populateReply, user}) {
     const [displayCom, setDisplayCom] = useState(false)
 
     //ref to the list of comment nodes
@@ -16,6 +16,12 @@ export default function PostCard({post, populateReply}) {
     async function handleVote(direction) {
         const response = await likePost(direction)
         if (response.err) return response.message //error handling
+        else return
+    }
+
+    async function handleDelete(id) {
+        const response = await delPost(id)
+        if (response.err) return response.err //error handling
         else return
     }
 
@@ -37,8 +43,13 @@ export default function PostCard({post, populateReply}) {
 
     }
 
-    function openComment(reply = null) {
-        populateReply('comment', reply, post._id)
+    function openComment(reply = null, editing = null) {
+        populateReply('comment', reply, post._id, editing)
+    }
+
+    function openEdit() {
+
+        populateReply('post', null, post._id, post)
     }
 
     const checkLen = post.comments.length > 0 
@@ -53,6 +64,7 @@ export default function PostCard({post, populateReply}) {
                     <div>
                         <CommentCard comment={comment} findReply={getReplyToComment} scroll={handleScroll} />
                         <p onClick={() => openComment(comment._id)}>Reply</p>
+                        <button type='button' onClick={() => openComment(null, comment)}>Edit</button>
                     </div>
                     </li>
                 })
@@ -60,6 +72,17 @@ export default function PostCard({post, populateReply}) {
             </ul>
         : null
 
+
+    const buttons = user._id === post.author._id
+    ?  <div className='interactBtn'>
+        <button type='button' onClick={openEdit}>Edit</button>
+        <button type='button' onClick={() => handleDelete(post._id)}>Delete</button>
+    </div>
+    :  <div className='interactBtn'>
+        <button type='button' onClick={() => handleVote('up')}>Like</button>
+        <button type='button' onClick={() => handleVote('down')}>Dislike</button>
+        <button type='button' onClick={openComment}>Comment</button>
+    </div>
     return (
         <div className='postCard'>
             <p>{post.author.username}</p>
@@ -67,11 +90,7 @@ export default function PostCard({post, populateReply}) {
             <p>{post.content}</p>
             <p>{post.date}</p>
             <p>{post.likes.length}</p>
-            <div className='interactBtn'>
-                <button type='button' onClick={() => handleVote('up')}>Like</button>
-                <button type='button' onClick={() => handleVote('down')}>Dislike</button>
-                <button type='button' onClick={openComment}>Comment</button>
-            </div>
+            {buttons}
             {displayCom 
                 ? 
                 <div className='commentsSection'>

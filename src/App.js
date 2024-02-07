@@ -8,7 +8,8 @@ function App() {
   const replyTemplate = {
     type: '',
     replying: null,
-    postid: null
+    postid: null,
+    editing: null
   }
   const [formProps, setFormProps] = useState(replyTemplate)
 
@@ -24,10 +25,10 @@ function App() {
   }
 
 
-  //pass this to comment cards and feed
-  function populateReply(type, replying, postid) {
+  //pass this to comment cards and feed, and userdetalil
+  function populateReply(type, replying, postid, editing) {
     //replying should be _id || null
-    setFormProps({type, replying, postid})
+    setFormProps({type, replying, postid, editing})
     toggleForm()
   }
 

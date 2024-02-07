@@ -152,6 +152,7 @@ export async function getFriendsList() {
   }
 }
 
+//send friend request
 export async function addFriend(id) {
   try {
     const response = await fetch(`${USERURL}add/${id}`, {
@@ -167,10 +168,11 @@ export async function addFriend(id) {
   }
 }
 
+//remove friend from list
 export async function delFriend(id) {
   try {
     const response = await fetch(`${USERURL}delete/${id}`, {
-      method: "DELETE",
+      method: "PUT",
       mode: "cors",
       headers: authHeader(),
     });
@@ -181,6 +183,55 @@ export async function delFriend(id) {
     return { err: "Could not access database" };
   }
 }
+
+export async function acceptReq(id) {
+  try {
+    const response = await fetch(`${USERURL}accept/${id}`, {
+      method: "PUT",
+      mode: "cors",
+      headers: authHeader(),
+    });
+    const data = await response.json();
+    return data.message;
+  } catch (err) {
+    console.error("Error", err);
+    return { err: "Could not access database" };
+  }
+}
+
+//delete request sent to you
+export async function delReq(id) {
+  try {
+    const response = await fetch(`${USERURL}delreq/${id}`, {
+      method: "PUT",
+      mode: "cors",
+      headers: authHeader(),
+    });
+    const data = await response.json();
+    return data.message;
+  } catch (err) {
+    console.error("Error", err);
+    return { err: "Could not access database" };
+  }
+}
+
+//recall request sent to other
+export async function rescReq(id) {
+  try {
+    const response = await fetch(`${USERURL}rescreq/${id}`, {
+      method: "PUT",
+      mode: "cors",
+      headers: authHeader(),
+    });
+    const data = await response.json();
+    return data.message;
+  } catch (err) {
+    console.error("Error", err);
+    return { err: "Could not access database" };
+  }
+}
+
+
 
 /*     -----Post functions-----     */
 export async function createPost(body) {
