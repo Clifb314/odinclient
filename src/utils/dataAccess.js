@@ -428,6 +428,23 @@ export async function commentDetail(id) {
 
 /*     -----Inbox functions-----     */
 
+export async function findOrCreate(friendid) {
+  const query = new URLSearchParams({ friendid })
+  try {
+    const response = await fetch(INBOXURL + 'find/' + query, {
+      method: 'GET',
+      mode: 'cors',
+      headers: authHeader()
+    })
+    const data = await response.json()
+    if (!response.ok) return data.message
+    else return data
+  } catch(err) {
+    console.error("Error", err);
+    return { err: "Could not access database" };
+  }
+}
+
 export async function sendInbox(body) {
   try {
     const response = await fetch(INBOXURL + "send", {

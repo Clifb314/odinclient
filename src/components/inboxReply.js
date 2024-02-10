@@ -7,12 +7,26 @@ import { sendInbox, inboxDetail } from "../utils/dataAccess";
 export default function InboxReply({openMsg}) {
     const [reply, setReply] = useState('')
     const [chain, setChain] = useState([])
+    const [title, setTitle] = useState('')
 
     async function getChain() {
         if (!openMsg) return
+
+        else if (openMsg.new) {
+            const newMsg = {
+                to: openMsg.to,
+                from: user._id,
+                content: 'Type your first message below!',
+                date: null,
+            }
+            setChain([newMsg])
+            return
+        }
+
+
         const response = await inboxDetail(openMsg._id)
         if (response.err) return response.err //error handling
-        else setChain(response)
+         setChain(response)
     }
 
     useEffect(() => {
@@ -23,9 +37,12 @@ export default function InboxReply({openMsg}) {
 
     const displayChain = chain && chain.length > 0 ?
     chain.map(msg => {
+        const side = msg.to.username === user._id ? 'left' : 'right'
         return (
-            <div key={uuidv4()} className="inboxItem">
+            <div key={uuidv4()} className={`inboxItem ${side}`}>
+                {/* icon */}
                 <p>{msg.from.username}</p>
+                <p>{msg.to.username}</p>
                 <p>{msg.content}</p>
                 <p>{msg.date}</p>
             </div>
@@ -46,8 +63,8 @@ export default function InboxReply({openMsg}) {
             from: null, //get user_id from somewhere
             content: reply,
             date: new Date(),
-            head: openMsg._id, //get from prop
-            title: '', //will only have title for first msg (?)
+            head: openMsg._id ? openMsg._id : null, //get from prop
+            title, //will only have title for first msg (?)
             seen: false,
         }
         const response = await sendInbox(message)
@@ -63,6 +80,7 @@ export default function InboxReply({openMsg}) {
                 {displayChain}
             </div>
             <form id="replyForm" onSubmit={handleSubmit}>
+                <input hidden={openMsg.new ? false : true} type="text" name="content" placeholder="Title (optional)" value={title} onChange={handleTitle} />
                 <input type="text" name="content" placeholder="Reply here.." value={reply} onChange={handleChange} />
                 <button form="replyForm" type="submit">Send</button>
             </form>

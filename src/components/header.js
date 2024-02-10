@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import {Link} from 'react-router-dom'
 import logout from '../utils/auth'
 import { acceptReq, delReq, rescReq } from "../utils/dataAccess";
+import {v4 as uuid} from 'uuidv4'
 
 export default function Header({ user }) {
 
@@ -35,7 +36,7 @@ export default function Header({ user }) {
     const pending = user.pending?.length > 0 
     ?  <ul>
         {user.pending.map(req => {
-            return <li>
+            return <li key={uuid()}>
                         {/*icon*/}
                         <Link to={`users/${req._id}`}>{req.username}</Link>
                         <button type="button" onClick={() => handleRescind(req._id)}></button>
@@ -50,7 +51,7 @@ export default function Header({ user }) {
         <p>Friend Requests</p>
         <ul>
             {user.requests.maps(request => {
-                return <li>
+                return <li key={uuid()}>
                     {/*icon*/}
                     {/*Link to userdetail page*/}
                     <Link to={`users/${request._id}`}>{request.username}</Link>

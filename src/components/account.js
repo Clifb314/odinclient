@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import * as dataAccess from '../utils/dataAccess'
+import {getAccount, editAccount} from '../utils/dataAccess'
 import FriendsList from './FriendsList'
 import PostCard from './postCard'
 
@@ -7,21 +7,24 @@ export default function Account({ user }) {
     const [myPage, setMyPage] = useState(null)
     const [editting, setEditting] = useState(false)
 
+
+    //could get from token instead
     const getUser = async () => {
         //if this needs to be async
-        return await dataAccess.getAccount()
+        return await getAccount()
     }
 
     useEffect(() => {
         const fetchUser = getUser()
         if (fetchUser.message) setMyPage(null)
+        //error handling here
         else {
-            setMyPage({...fetchUser, password: '', checkPW: '', oldPW: ''})
+            setMyPage({...fetchUser, password: '', checkPW: '', oldPW: '', fname: '', lname: ''})
             //set icon from blob?
         } 
 
         return () => setMyPage(null)
-    }, [editting])
+    }, [])
 
     function toggle() {
         editting ? setEditting(false) : setEditting(true)
@@ -29,8 +32,13 @@ export default function Account({ user }) {
 
     function handleSubmit(e) {
         e.preventDefault()
-        const body = JSON.parse(e.target)
-        const submit = dataAccess.editAccount(body)
+        const {lname, fname} = e.target.name
+        //const body = JSON.parse(e.target)
+        const body = {
+            ...myPage,
+            fullName: fname + ' ' + lname,
+        }
+        const submit = editAccount(body)
         if (submit.err) return submit.err //handle error
         else return submit.message //display submit.message
 
@@ -51,7 +59,8 @@ export default function Account({ user }) {
     <form id='accountForm' onSubmit={handleSubmit}>
         <input id='username' name='username' value={myPage.username} disabled={!editting} onChange={handleChange} />
         <input id='email' name='email' value={myPage.userDetails.email} disabled={!editting} onChange={handleChange} />
-        <input id='name' name='name' value={myPage.userDetails.fullName} disabled={!editting} onChange={handleChange} />
+        <input id='fname' name='name' value={myPage.userDetails.fullName} disabled={!editting} onChange={handleChange} />
+        <input id='lname' name='name' value={myPage.userDetails.fullName} disabled={!editting} onChange={handleChange} />
         <input id='bday' name='bday' value={myPage.userDetails.birthdate} disabled={!editting} onChange={handleChange} />
         <input id='password' name='password' type='password' value={myPage.password} hidden={!editting} onChange={handleChange} />
         <input id='checkPW' name='checkPW' type='password' value={myPage.checkPW} hidden={!editting} onChange={handleChange} />

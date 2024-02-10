@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { getUserDetail, addFriend, delFriend } from "../utils/dataAccess";
 import FriendsList from "./FriendsList";
 import PostCard from "./postCard";
+import { useParams } from "react-router-dom";
 
 
 //need to get id from params
-export default function UserPage({id}) {
+export default function UserPage() {
     const [userDetails, setUserDetails] = useState(null)
     const [friended, setFriended] = useState(false)
+    const id = useParams().userid
 
     async function getUser() {
         const response = await getUserDetail(id)
@@ -32,7 +34,7 @@ export default function UserPage({id}) {
         getUser()
 
         return () => setUserDetails(null)
-    }, [])
+    }, [id])
 
     const posts = userDetails?.posts.length > 0 
     ? <ul>

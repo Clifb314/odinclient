@@ -1,6 +1,7 @@
 import './App.css';
 import React, { useState } from 'react';
 import PopupForm from './components/popupForm';
+import InboxView from './components/inboxView';
 
 function App() {
 
@@ -12,6 +13,7 @@ function App() {
     editing: null
   }
   const [formProps, setFormProps] = useState(replyTemplate)
+  const [openMsg, setOpenMsg] = useState(null)
 
 
   function toggleForm() {
@@ -24,6 +26,7 @@ function App() {
     return
   }
 
+  //pass setOpenMsg to userpage and openMsg to inboxview
 
   //pass this to comment cards and feed, and userdetalil
   function populateReply(type, replying, postid, editing) {
