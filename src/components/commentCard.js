@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { likeComment } from "../utils/dataAccess";
 import PopupReply from "./popupReply";
+import { Link } from "react-router-dom";
 
 export default function CommentCard({comment, findReply, scroll}) {
     const [hovering, setHovering] = useState(false)
@@ -26,7 +27,9 @@ export default function CommentCard({comment, findReply, scroll}) {
     return (
         <div className="commentCard">
             {replyLine}
-            <p>{comment.author.username}</p>
+            <p><Link to={`/users/${comment.author._id}`}>
+                {comment.author.username}
+                </Link></p>
             <p>{comment.content}</p>
             <p>{comment.date}</p>
             <p>{comment.likes.length}</p>

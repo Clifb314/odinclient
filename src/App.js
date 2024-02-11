@@ -1,10 +1,16 @@
 import './App.css';
+import * as ReactDom from 'react-dom/client'
+import {createBrowserRouter, RouterProvider, Link, Outlet} from 'react-router-dom'
 import React, { useState } from 'react';
 import PopupForm from './components/popupForm';
 import InboxView from './components/inboxView';
+import Header from './components/header';
 
 function App() {
 
+
+  
+  const [openMsg, setOpenMsg] = useState(null)
   const [openForm, setOpenForm] = useState(false)
   const replyTemplate = {
     type: '',
@@ -13,7 +19,6 @@ function App() {
     editing: null
   }
   const [formProps, setFormProps] = useState(replyTemplate)
-  const [openMsg, setOpenMsg] = useState(null)
 
 
   function toggleForm() {
@@ -47,7 +52,11 @@ function App() {
 
   return (
     <div className="App">
+    <Header />
 
+    <div className='Components'>
+      <Outlet />
+    </div>
 
     {formBtn}
     </div>

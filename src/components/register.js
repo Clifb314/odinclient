@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import register from '../utils/auth'
 import googleAuth from '../utils/dataAccess'
+import { editIcon } from '../utils/dataAccess'
 
 export default function Register() {
     const template = {
@@ -31,6 +32,14 @@ export default function Register() {
     async function handleSubmit(e) {
         const signup = await register(userInfo)
         if (signup.err) return signup.err //error handling
+        if (e.icon) {
+            //create icon from same method to update icon
+            const iconForm = new FormData()
+            iconForm.append('icon', e.icon)
+            const response = await editIcon(iconForm)
+            if (response.err) return response.err //error handling
+            
+        }
         else return signup.user //set user higher up
     }
 
@@ -38,6 +47,7 @@ export default function Register() {
     return (
         <div className='register'>
             <form className='registerForm' onSubmit={handleSubmit}>
+                <input name='icon' id='icon' type='file' accept='image/*'/>
                 <input name='username' id='username' value={userInfo.username} />
                 <input name='fName' id='fName' value={userInfo.fName} onChange={handleChange} />
                 <input name='lName' id='lName' value={userInfo.lName} onChange={handleChange} />

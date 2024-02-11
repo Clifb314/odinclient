@@ -3,15 +3,20 @@ import { readInbox, findOrCreate } from "../utils/dataAccess";
 import InboxReply from "./inboxReply";
 import InboxList from "./inboxList";
 import { checkUser } from "../utils/auth";
+import { useParams } from "react-router-dom";
 
 
-export default function InboxView({friendid}) {
+export default function InboxView() {
     const [openMsg, setOpenMsg] = useState(null)
     const [showTo, setShowTo] = useState(false)
     const [friendsList, setFriendsList] = useState([])
     const [options, setOptions] = useState([])
     const [searchString, setSearchString] = useState('')
     const [dropDownView, setDropDownView] = useState(false)
+
+
+    const friend = useParams()
+
 
     function getFriends() {
         const friends = checkUser().friends
@@ -77,11 +82,11 @@ export default function InboxView({friendid}) {
       : null
 
     useEffect(() => {
-        //redirect is a friendid to whom you want to message
-        //let's check for messages to friendid and return the most recent message chain
+        //use params to bring up a user after clicking from their page
+        //let's check for messages to friend.id and return the most recent message chain
         //if none, create a new one
-        if (friendid) {
-            findFromRedirect(friendid)
+        if (friend.id) {
+            findFromRedirect(friend.id)
         }
         getFriends()
     }, [])

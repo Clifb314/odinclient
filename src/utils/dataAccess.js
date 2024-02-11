@@ -1,6 +1,4 @@
-import auth from "../../../../blogAPI/client/src/utils/auth";
 import { googleAuth } from "../../../controllers/userController";
-import { replaceOne } from "../../../models/userModel";
 import { authHeader, authJson } from "./authHeader";
 
 const USERURL = "http://localhost:5000/api/auth/";
@@ -73,6 +71,40 @@ export async function getAccount() {
     });
     const data = await response.json();
     if (!response.ok) return data.message;
+    else return data;
+  } catch (err) {
+    console.error("Error", err);
+    return { err: "Could not access database" };
+  }
+}
+
+export async function getIcon() {
+  try {
+    const response = await fetch(`${USERURL}icon`, {
+      method: "GET",
+      mode: "cors",
+      headers: authHeader(),
+    });
+    const data = await response.blob();
+    if (!response.ok) return data.message;
+    else return data;
+  } catch (err) {
+    console.error("Error", err);
+    return { err: "Could not access database" };
+  }
+}
+
+
+export async function editIcon(form) {
+  try {
+    const response = await fetch(`${USERURL}icon/edit`, {
+      method: "PUT",
+      mode: "cors",
+      body: form,
+      headers: authHeader(),
+    });
+    const data = await response.json();
+    if (!response.ok) return response.err
     else return data;
   } catch (err) {
     console.error("Error", err);

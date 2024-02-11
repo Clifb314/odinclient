@@ -2,10 +2,13 @@ import React, { useEffect, useState } from 'react'
 import postList from '../utils/dataAccess'
 import PostCard from './postCard'
 import { checkUser } from '../utils/auth'
+import { useParams } from 'react-router-dom'
 
-export default function feed({sorting, populateReply}) {
+export default function feed({populateReply}) {
     const [posts, setPosts] = useState([])
     const [user, setUser] = useState(null)
+
+    const sorting = useParams().sorting
 
 
     async function getPosts() {

@@ -2,23 +2,29 @@ import React, { useEffect, useState } from 'react'
 import {getAccount, editAccount} from '../utils/dataAccess'
 import FriendsList from './FriendsList'
 import PostCard from './postCard'
+import { checkUser } from '../utils/auth'
+import { useNavigate } from 'react-router-dom'
 
 export default function Account({ user }) {
     const [myPage, setMyPage] = useState(null)
     const [editting, setEditting] = useState(false)
 
+    const redirect = useNavigate()
 
     //could get from token instead
     const getUser = async () => {
-        //if this needs to be async
-        return await getAccount()
+        const user = getAccount()
+        if (user.err) redirect('/')
+        else return user
     }
 
     useEffect(() => {
-        const fetchUser = getUser()
-        if (fetchUser.message) setMyPage(null)
+        if (!checkUser()) {
+            redirect('/')
+        }
         //error handling here
         else {
+            const fetchUser = getUser()
             setMyPage({...fetchUser, password: '', checkPW: '', oldPW: '', fname: '', lname: ''})
             //set icon from blob?
         } 

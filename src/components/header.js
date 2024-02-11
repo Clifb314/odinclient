@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Link} from 'react-router-dom'
+import {Link, Outlet} from 'react-router-dom'
 import logout from '../utils/auth'
 import { acceptReq, delReq, rescReq } from "../utils/dataAccess";
 import {v4 as uuid} from 'uuidv4'
@@ -66,24 +66,25 @@ export default function Header({ user }) {
 
     return (
         <div className="header">
-            <ul className="headLinks">
-                <li><Link to='/'>Home</Link></li>
-                <li><Link to='/feed'>My Feed</Link></li>
-            </ul>
-            <div className="logo">Clif Book</div>
-            {user ? 
-                <ul className="authLinks">
-                    <li><Link to='/inbox'>Inbox</Link></li>
-                    <li><Link to='/account'>Account</Link></li>
-                    <li onClick={handleToggle}>Friend Requests</li>
-                    <li><Link onClick={logout} to='/'>Log Out</Link></li>
+                <ul className="headLinks">
+                    <li><Link to='/'>Home</Link></li>
+                    <li><Link to='/feed/recent'>Recent Posts</Link></li>
+                    <li><Link to={'/feed/top'}>Top Posts</Link></li>
                 </ul>
-                :
-                <ul className="guestLinks">
-                    <li><Link to='/login'>Log In</Link></li>
-                    <li><Link to='/register'>Register</Link></li>
-                </ul>
-            }
+                <div className="logo">Clif Book</div>
+                {user ?
+                    <ul className="authLinks">
+                        <li><Link to='/inbox'>Inbox</Link></li>
+                        <li><Link to='/account'>Account</Link></li>
+                        <li onClick={handleToggle}>Friend Requests</li>
+                        <li><Link onClick={logout} to='/'>Log Out</Link></li>
+                    </ul>
+                    :
+                    <ul className="guestLinks">
+                        <li><Link to='/login'>Log In</Link></li>
+                        <li><Link to='/register'>Register</Link></li>
+                    </ul>
+                }
             {requests}
         </div>
     )

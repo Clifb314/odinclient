@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 
 
@@ -9,7 +10,9 @@ export default function FriendsList({ friends }) {
     ? <ul>
         {friends.map(friend => {
             {/* icon */}
-            return <li>{friend.username}</li>
+            return <li><Link to={`/users/${friend._id}`}>
+            {friend.username}
+            </Link></li>
         })}
     </ul>
     : <p>Empty... Try adding someone!</p>

@@ -55,5 +55,5 @@ export async function register(body) {
 
 export function checkUser() {
     const user = localStorage.getItem('user')
-    return user ? user : null
+    return user ? JSON.parse(user.user) : null
 }

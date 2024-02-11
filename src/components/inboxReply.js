@@ -4,7 +4,7 @@ import { sendInbox, inboxDetail } from "../utils/dataAccess";
 
 
 
-export default function InboxReply({openMsg}) {
+export default function InboxReply({openMsg, userid}) {
     const [reply, setReply] = useState('')
     const [chain, setChain] = useState([])
     const [title, setTitle] = useState('')
@@ -64,7 +64,7 @@ export default function InboxReply({openMsg}) {
             content: reply,
             date: new Date(),
             head: openMsg._id ? openMsg._id : null, //get from prop
-            title, //will only have title for first msg (?)
+            title: openMsg.new ? title : '', //will only have title for first msg (?)
             seen: false,
         }
         const response = await sendInbox(message)
@@ -80,8 +80,15 @@ export default function InboxReply({openMsg}) {
                 {displayChain}
             </div>
             <form id="replyForm" onSubmit={handleSubmit}>
-                <input hidden={openMsg.new ? false : true} type="text" name="content" placeholder="Title (optional)" value={title} onChange={handleTitle} />
-                <input type="text" name="content" placeholder="Reply here.." value={reply} onChange={handleChange} />
+                <input hidden={openMsg.new ? false : true}
+                 type="text" name="content"
+                 placeholder="Title (optional)" 
+                 value={title} 
+                 onChange={(e) => setTitle(e.target.value)} 
+                />
+                <input type="text" name="content" placeholder="Reply here.."
+                 value={reply} 
+                 onChange={handleChange} />
                 <button form="replyForm" type="submit">Send</button>
             </form>
         </div>

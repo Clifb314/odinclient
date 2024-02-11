@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { likePost, delPost } from '../utils/dataAccess'
 import CommentCard from './commentCard'
+import { Link } from 'react-router-dom'
 
 
 export default function PostCard({post, populateReply, user}) {
@@ -85,7 +86,7 @@ export default function PostCard({post, populateReply, user}) {
     </div>
     return (
         <div className='postCard'>
-            <p>{post.author.username}</p>
+            <p><Link to={`/users/${post.author._id}`}>{post.author.username}</Link></p>
             <p>{post.title}</p>
             <p>{post.content}</p>
             <p>{post.date}</p>
