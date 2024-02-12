@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getUserDetail, addFriend, delFriend } from "../utils/dataAccess";
+import { getUserDetail, addFriend, delFriend, getUserIcon } from "../utils/dataAccess";
 import FriendsList from "./FriendsList";
 import PostCard from "./postCard";
 import { useParams } from "react-router-dom";
@@ -13,8 +13,13 @@ export default function UserPage() {
 
     async function getUser() {
         const response = await getUserDetail(id)
-        if (response.err) return null //error handling
-        else setUserDetails(response)
+        const iconBlob = getUserIcon(id)
+        if (response.err || iconBlob.err) return null //error handling
+        else {
+            const imgSrc = URL.createObjectURL(iconBlob)
+            response.icon = imgSrc
+            setUserDetails(response)
+        }
 
     }
 
@@ -49,6 +54,7 @@ export default function UserPage() {
     return (
         <div className="userPage">
             {/*icon*/}
+            <img src={userDetails.icon} className="icon" />
             <h1>{userDetails.username}</h1>
             <p>{userDetails.fullName}</p>
             <p>{userDetails.age}</p>

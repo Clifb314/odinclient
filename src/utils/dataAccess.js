@@ -17,7 +17,7 @@ export async function getUserList() {
     });
     const data = await response.json();
     if (!response.ok) {
-      return data.message;
+      return {err: data.message};
     } else {
       return data;
     }
@@ -35,7 +35,7 @@ export async function getUserDetail(id) {
       headers: authHeader(),
     });
     const data = await response.json();
-    if (!response.ok) return data.message;
+    if (!response.ok) return {err: data.message};
     else return data;
   } catch (err) {
     console.error("Error", err);
@@ -52,7 +52,7 @@ export async function getUserHome() {
     });
     const data = await response.json();
     if (!response.ok) {
-      return data.message;
+      return {err: data.message};
     } else {
       return data;
     }
@@ -70,7 +70,7 @@ export async function getAccount() {
       headers: authHeader(),
     });
     const data = await response.json();
-    if (!response.ok) return data.message;
+    if (!response.ok) return {err: data.message};
     else return data;
   } catch (err) {
     console.error("Error", err);
@@ -86,7 +86,7 @@ export async function getIcon() {
       headers: authHeader(),
     });
     const data = await response.blob();
-    if (!response.ok) return data.message;
+    if (!response.ok) return {err: data.message};
     else return data;
   } catch (err) {
     console.error("Error", err);
@@ -94,6 +94,21 @@ export async function getIcon() {
   }
 }
 
+export async function getUserIcon(id) {
+  try {
+    const response = await fetch(`${USERURL}icon/${id}`, {
+      method: "GET",
+      mode: "cors",
+      headers: authHeader(),
+    });
+    const data = await response.blob();
+    if (!response.ok) return {err: data.message};
+    else return data;
+  } catch (err) {
+    console.error("Error", err);
+    return { err: "Could not access database" };
+  }
+}
 
 export async function editIcon(form) {
   try {
@@ -157,7 +172,7 @@ export async function uploadIcon(image) {
       body: image,
     });
     const data = response.json();
-    return data.message;
+    return {err: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
@@ -174,7 +189,7 @@ export async function getFriendsList() {
     });
     const data = await response.json();
     if (!response.ok) {
-      return data.message;
+      return {err: data.message};
     } else {
       return data;
     }
@@ -193,7 +208,7 @@ export async function addFriend(id) {
       headers: authHeader(),
     });
     const data = await response.json();
-    return data.message;
+    return {err: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
@@ -209,7 +224,7 @@ export async function delFriend(id) {
       headers: authHeader(),
     });
     const data = await response.json();
-    return data.message;
+    return {err: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
@@ -224,7 +239,7 @@ export async function acceptReq(id) {
       headers: authHeader(),
     });
     const data = await response.json();
-    return data.message;
+    return {err: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
@@ -240,7 +255,7 @@ export async function delReq(id) {
       headers: authHeader(),
     });
     const data = await response.json();
-    return data.message;
+    return {err: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
@@ -256,7 +271,7 @@ export async function rescReq(id) {
       headers: authHeader(),
     });
     const data = await response.json();
-    return data.message;
+    return {err: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
@@ -275,7 +290,7 @@ export async function createPost(body) {
       headers: authJson(),
     });
     const data = await response.json();
-    return data.message;
+    return {err: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
@@ -291,7 +306,7 @@ export async function editPost(body, id) {
       headers: authJson(),
     });
     const data = await response.json();
-    return data.message;
+    return {err: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
@@ -306,7 +321,7 @@ export async function delPost(id) {
       headers: authHeader(),
     });
     const data = response.json();
-    return data.message;
+    return {err: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
@@ -321,7 +336,7 @@ export async function likePost(id, direction) {
       headers: authHeader(),
     });
     const data = response.json();
-    return data.message;
+    return {err: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
@@ -336,7 +351,7 @@ export async function postList(sorting) {
       mode: "cors",
     });
     const data = await response.json();
-    if (!response.ok) return data.message;
+    if (!response.ok) return {err: data.message};
     else return data;
   } catch (err) {
     console.error("Error", err);
@@ -351,7 +366,7 @@ export async function postDetail(id) {
       mode: "cors",
     });
     const data = await response.json();
-    if (!response.ok) return data.message;
+    if (!response.ok) return {err: data.message};
     else return data;
   } catch (err) {
     console.error("Error", err);
@@ -371,7 +386,7 @@ export async function createComment(body, postid) {
       headers: authJson(),
     });
     const data = await response.json();
-    return data.message;
+    return {err: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
@@ -388,7 +403,7 @@ export async function editComment(body, id, postid) {
       header: authJson(),
     });
     const data = await response.json();
-    return data.message;
+    return {err: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
@@ -404,7 +419,7 @@ export async function delComment(id) {
       headers: authHeader(),
     });
     const data = await response.json();
-    return data.message;
+    return {err: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
@@ -420,7 +435,7 @@ export async function likeComment(id, direction) {
       headers: authHeader(),
     });
     const data = await response.json();
-    return data.message;
+    return {err: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
@@ -435,7 +450,7 @@ export async function commentList(postid) {
       mode: "cors",
     });
     const data = await response.json();
-    if (!response.ok) return data.message;
+    if (!response.ok) return {err: data.message};
     else return data;
   } catch (err) {
     console.error("Error", err);
@@ -450,7 +465,7 @@ export async function commentDetail(id) {
       mode: "cors",
     });
     const data = await response.json();
-    if (!response.ok) return data.message;
+    if (!response.ok) return {err: data.message};
     else return data;
   } catch (err) {
     console.error("Error", err);
@@ -469,7 +484,7 @@ export async function findOrCreate(friendid) {
       headers: authHeader()
     })
     const data = await response.json()
-    if (!response.ok) return data.message
+    if (!response.ok) return {err: data.message}
     else return data
   } catch(err) {
     console.error("Error", err);
@@ -486,7 +501,7 @@ export async function sendInbox(body) {
       headers: authJson(),
     });
     const data = await response.json();
-    if (!response.ok) return data.message;
+    if (!response.ok) return {err: data.message};
     else return data;
   } catch (err) {
     console.error("Error", err);
@@ -502,7 +517,7 @@ export async function deleteInbox(id) {
       headers: authHeader(),
     });
     const data = await response.json();
-    return data.message;
+    return {err: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
@@ -517,7 +532,7 @@ export async function readInbox(id) {
       headers: authHeader(),
     });
     const data = await response.json();
-    return data.message;
+    return {err: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
@@ -532,7 +547,7 @@ export async function getInboxList() {
       headers: authHeader(),
     });
     const data = await response.json();
-    if (!response.ok) return data.message;
+    if (!response.ok) return {err: data.message};
     else return data;
   } catch (err) {
     console.error("Error", err);
@@ -549,7 +564,7 @@ export async function inboxDetail(id) {
       headers: authHeader(),
     });
     const data = await response.json();
-    if (!response.ok) return data.message;
+    if (!response.ok) return {err: data.message};
     else return data;
   } catch (err) {
     console.error("Error", err);
@@ -565,7 +580,7 @@ export async function guestHome() {
       mode: "cors",
     });
     const data = await response.json();
-    if (!response.ok) return data.message;
+    if (!response.ok) return {err: data.message};
     else return data;
   } catch (err) {
     console.error("Error", err);
