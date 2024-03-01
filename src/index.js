@@ -16,15 +16,13 @@ import { checkUser } from './utils/auth';
 //   </React.StrictMode>
 // );
 
-const [toggle, setToggle] = useState(null)
-
 //  router stuff
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
     errorElement: <ErrorPage />,
-    loader: checkUser(),
+    //loader: checkUser(),
     children: [
       {
         index: true,
@@ -43,7 +41,7 @@ const router = createBrowserRouter([
         element: <Feed />
       },
       {
-        path: '/inbox/:id',
+        path: '/inbox',
         element: <Inbox />
       },
       {

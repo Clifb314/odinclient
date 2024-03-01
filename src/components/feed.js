@@ -2,19 +2,20 @@ import React, { useEffect, useState } from "react";
 import { postList, getUserIcon } from "../utils/dataAccess";
 import PostCard from "./postCard";
 import MsgBox from "./slideInMsg";
-import { checkUser } from "../utils/auth";
+import PopupForm from "./popupForm";
 import { useParams } from "react-router-dom";
 
-export default function feed() {
+export default function Feed() {
+
+
   const replyTemplate = {
-    type: "", //post, reply, comment, edit
+    type: "post", //post, reply, comment, edit, post is default
     postRef: null, //replying to a post (or comment), or editing a post
-    commentRef: null, //if replying to a comment or editing
+    commentRef: null, //if replying to a comment or editing a comment
   };
   const [PopUpOpts, setPopupOpts] = useState(replyTemplate);
   const [openPopUp, setOpenPopUp] = useState(false);
   const [posts, setPosts] = useState([]);
-  const [user, setUser] = useState(null);
   const [slideIn, setSlideIn] = useState(null);
   const sorting = useParams().sorting;
 
@@ -37,7 +38,7 @@ export default function feed() {
 
   //popup reply functions
   function togglePopUp(keepOpen = false) {
-    if (openPopUp && !keepOpen) {
+    if (openPopUp) {
       setOpenPopUp(false);
       setPopupOpts(replyTemplate);
     } else {
@@ -52,35 +53,32 @@ export default function feed() {
 
   const floatBtn = openPopUp ? (
     <div className="popup open">
-      <button type="button" onClick={toggleForm}>
+      <div className="closeBtn" onClick={togglePopUp}>
         X
-      </button>
+      </div>
       <PopupForm
         options={PopUpOpts}
-        toggleOpen={openPopUp}
+        toggleOpen={togglePopUp}
         slideIn={displaySlideIn}
       />
     </div>
   ) : (
-    <div className="popup closed" onClick={toggleForm}>
+    <div className="popup closed" onClick={togglePopUp}>
       !
     </div>
   );
 
   //  server requests
   async function getPosts() {
-    return await postList(sorting);
+    const query = sorting ? sorting : 'top'
+    const response = await postList(query);
+    if (response.err) displaySlideIn('error', response.err)
+    else setPosts(response)
   }
 
-  async function getUser() {
-    const check = await checkUser();
-    setUser(check);
-  }
 
   useEffect(() => {
-    const list = getPosts();
-    setPosts(list);
-    getUser();
+    getPosts();
 
     return () => setPosts([]);
   }, []);
@@ -88,20 +86,17 @@ export default function feed() {
   //  render posts
   const display =
     posts.length > 0 ? (
-      <ul className="feedList">
-        {posts.map((post) => {
+        posts.map((post) => {
           return (
-            <li key={post._id}>
+            <div key={post._id}>
               <PostCard
                 post={post}
                 populateReply={populatePopUp}
-                user={user}
                 slideIn={displaySlideIn}
               />
-            </li>
+            </div>
           );
-        })}
-      </ul>
+        })
     ) : (
       <p>Feed is empty..</p>
     );

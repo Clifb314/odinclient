@@ -1,4 +1,3 @@
-import { googleAuth } from "../../../controllers/userController";
 import { authHeader, authJson } from "./authHeader";
 
 const USERURL = "http://localhost:5000/api/auth/";
@@ -10,7 +9,7 @@ const COMURL = "http://localhost:5000/api/comments/";
 /*     -----user functions-----     */
 export async function getUserList() {
   try {
-    const response = await fetch(`${USERURL}userlist`, {
+    const response = await fetch(`${USERURL}users/list`, {
       method: "GET",
       mode: "cors",
       headers: authHeader(),
@@ -188,6 +187,7 @@ export async function getFriendsList() {
       headers: authHeader(),
     });
     const data = await response.json();
+    console.log(data)
     if (!response.ok) {
       return {err: data.message};
     } else {
@@ -349,6 +349,7 @@ export async function postList(sorting) {
     const response = await fetch(`${POSTURL}list/${sorting}`, {
       method: "GET",
       mode: "cors",
+      headers: authHeader()
     });
     const data = await response.json();
     if (!response.ok) return {err: data.message};
@@ -379,41 +380,41 @@ export async function postDetail(id) {
 export async function createComment(body, postid) {
   const query = new URLSearchParams({ postid })
   try {
-    const response = await fetch(COMURL + "post/" + query, {
+    console.log(body)
+    const response = await fetch(COMURL + "post?" + query, {
       method: "POST",
       mode: "cors",
       body: JSON.stringify(body),
       headers: authJson(),
     });
     const data = await response.json();
-    return {err: data.message};
+    return {message: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
   }
 }
 
-export async function editComment(body, id, postid) {
-  const query = new URLSearchParams({ postid });
+export async function editComment(body, id) {
   try {
-    const response = await fetch(`${COMURL}${id}/edit/${query}`, {
+    const response = await fetch(`${COMURL}${id}/edit`, {
       method: "PUT",
       mode: "cors",
       body: JSON.stringify(body),
-      header: authJson(),
+      headers: authJson(),
     });
     const data = await response.json();
-    return {err: data.message};
+    return {message: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
   }
 }
 
-export async function delComment(id) {
+export async function delComment(id, postid) {
   const query = new URLSearchParams({ postid });
   try {
-    const response = await fetch(`${COMURL}${id}/del/${query}`, {
+    const response = await fetch(`${COMURL}${id}/del?${query}`, {
       method: "DELETE",
       mode: "cors",
       headers: authHeader(),
@@ -429,7 +430,7 @@ export async function delComment(id) {
 export async function likeComment(id, direction) {
   //direction  = up || down
   try {
-    const response = await fetch(COMURL + id + direction, {
+    const response = await fetch(COMURL + id + '/' + direction, {
       method: "PUT",
       mode: "cors",
       headers: authHeader(),
@@ -445,7 +446,7 @@ export async function likeComment(id, direction) {
 export async function commentList(postid) {
   const query = new URLSearchParams({ postid });
   try {
-    const response = await fetch(COMURL + "/all/" + query, {
+    const response = await fetch(COMURL + "all?" + query, {
       method: "GET",
       mode: "cors",
     });
@@ -478,7 +479,7 @@ export async function commentDetail(id) {
 export async function findOrCreate(friendid) {
   const query = new URLSearchParams({ friendid })
   try {
-    const response = await fetch(INBOXURL + 'find/' + query, {
+    const response = await fetch(INBOXURL + 'find?' + query, {
       method: 'GET',
       mode: 'cors',
       headers: authHeader()

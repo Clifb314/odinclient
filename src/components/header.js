@@ -1,10 +1,14 @@
-import React, {useState} from "react";
-import {Link, Outlet} from 'react-router-dom'
-import logout from '../utils/auth'
+import React, {useContext, useState} from "react";
+import {Link} from 'react-router-dom'
 import { acceptReq, delReq, rescReq } from "../utils/dataAccess";
-import {v4 as uuid} from 'uuidv4'
+import {v4 as uuid} from 'uuid'
+import { useAuthContext } from "../utils/useAuth";
+import Icons from "../utils/svgHelper";
 
-export default function Header({ user }) {
+export default function Header() {
+    //const loggedIn = useContext()
+    //const {auth} = useAuth()
+    const {user, updateUser, logoutUser} = useAuthContext()
 
     const [showReqs, setShowReqs] = useState(false)
 
@@ -33,36 +37,36 @@ export default function Header({ user }) {
         else return response
     }
 
-    const pending = user.pending?.length > 0 
+    const pending = user?.pending?.length > 0 
     ?  <ul>
         {user.pending.map(req => {
             return <li key={uuid()}>
                         {/*icon*/}
                         <Link to={`users/${req._id}`}>{req.username}</Link>
-                        <button type="button" onClick={() => handleRescind(req._id)}></button>
+                        <button type="button" onClick={() => handleRescind(req._id)}>-</button>
             </li>
         })}
     </ul>
     : null
 
     //need to make logging in return populated friend request usernames
-    const requests = showReqs && user.requests?.length > 0
+    const requests = showReqs && (user.requests?.length > 0 || user?.pending?.length > 0)
     ? <div className="friendReqs">
         <p>Friend Requests</p>
         <ul>
-            {user.requests.maps(request => {
+            {user.requests.map(request => {
                 return <li key={uuid()}>
                     {/*icon*/}
-                    {/*Link to userdetail page*/}
                     <Link to={`users/${request._id}`}>{request.username}</Link>
                     <button type="button" onClick={() => handleAddFriend(request._id)}>+</button>
                     <button type="button" onClick={() => handleDeleteReq(request._id)}>-</button>
                 </li>
             })}
-            {pending}
         </ul>
+        <p>Pending Requests</p>
+        {pending}
     </div>
-    : null
+    : null //add icon with number
 
     return (
         <div className="header">
@@ -71,13 +75,18 @@ export default function Header({ user }) {
                     <li><Link to='/feed/recent'>Recent Posts</Link></li>
                     <li><Link to={'/feed/top'}>Top Posts</Link></li>
                 </ul>
-                <div className="logo">Clif Book</div>
+                <div className="logo">
+                    <h1>ClifBook</h1>
+                    </div>
                 {user ?
                     <ul className="authLinks">
                         <li><Link to='/inbox'>Inbox</Link></li>
-                        <li><Link to='/account'>Account</Link></li>
+                        <li><Link to='/account'>
+                            <Icons iconName={'acc_settings'} />
+                            </Link></li>
                         <li onClick={handleToggle}>Friend Requests</li>
-                        <li><Link onClick={logout} to='/'>Log Out</Link></li>
+                        {requests}
+                        <li><Link onClick={logoutUser} to='/'>Log Out</Link></li>
                     </ul>
                     :
                     <ul className="guestLinks">
@@ -85,7 +94,6 @@ export default function Header({ user }) {
                         <li><Link to='/register'>Register</Link></li>
                     </ul>
                 }
-            {requests}
         </div>
     )
 }

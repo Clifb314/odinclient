@@ -1,24 +1,44 @@
 import React, { useEffect, useRef, useState } from "react";
-import { likePost, delPost, getUserIcon } from "../utils/dataAccess";
+import {
+  likePost,
+  delPost,
+  getUserIcon,
+  commentList,
+  likeComment,
+} from "../utils/dataAccess";
 import CommentCard from "./commentCard";
 import { Link } from "react-router-dom";
+import { useAuthContext } from "../utils/useAuth";
+import Icons from "../utils/svgHelper";
 
-export default function PostCard({ post, populateReply, user, slideIn }) {
+export default function PostCard({ post, populateReply, slideIn }) {
   const [displayCom, setDisplayCom] = useState(false);
   const [imgSrc, setImgSrc] = useState(null);
-
+  const [commentDetails, setCommentDetails] = useState([]);
+  const { user } = useAuthContext();
   async function displayIcon(id) {
     const imgBlob = await getUserIcon(id);
     //error handling?
-    if (imgBlob.err) return null;
-    else return URL.createObjectURL(imgBlob);
+    if (imgBlob.err || imgBlob.message) return null;
+    else return setImgSrc(URL.createObjectURL(imgBlob));
+  }
+
+  async function getCommentsDetaills(postid) {
+    const response = await commentList(postid);
+    if (response.err) slideIn("error", response.err);
+    else setCommentDetails(response);
   }
 
   useEffect(() => {
-    if (post.author._id) {
-      setImgSrc(displayIcon(post.author._id));
+    if (post.author.icon) {
+      console.log(post);
+      displayIcon(post.author._id);
     }
-  });
+
+    if (post.comments?.length > 0) {
+      getCommentsDetaills(post._id);
+    }
+  }, []);
 
   //ref to the list of comment nodes
   const replyRef = useRef(null);
@@ -28,11 +48,20 @@ export default function PostCard({ post, populateReply, user, slideIn }) {
   }
 
   async function handleVote(direction) {
-    const response = await likePost(direction);
+    const response = await likePost(post._id, direction);
     if (response.err) {
       slideIn("error", response.err);
     } else {
-      const msg = direction === up ? "Nice!" : "Ick!";
+      const msg = direction === "up" ? "Nice!" : "Ick!";
+      slideIn("success", msg);
+    }
+  }
+
+  async function handleCommentVote(id, direction) {
+    const response = await likeComment(id, direction);
+    if (response.err) slideIn("error", response.err);
+    else {
+      const msg = direction === "up" ? "Nice!" : "Ick!";
       slideIn("success", msg);
     }
   }
@@ -46,17 +75,20 @@ export default function PostCard({ post, populateReply, user, slideIn }) {
   function getReplyToComment(id) {
     //to preview the comment on mouseover
     const target = post.comments.filter((comment) => comment._id === id);
-    const output = target.shift();
+    let output = target.shift();
+    output.replyTo = null
     return output ? output : null;
   }
 
   function handleScroll(id) {
     //scroll to comment on click
     const listNode = replyRef.current;
-    const replyArr = listNode
-      .querySelectorAll("li")
-      .filter((node) => node.key === id);
+    console.log(listNode)
+    const replyArr = [...listNode
+      .querySelectorAll("li")]
+      .filter((node) => node.id === id);
     const replyNode = replyArr.shift();
+    console.log(replyNode)
     replyNode.scrollIntoView({
       behavior: "smooth",
     });
@@ -69,23 +101,26 @@ export default function PostCard({ post, populateReply, user, slideIn }) {
 
   function openEdit() {
     //options: type, post, comment
-    populateReply("post", post, null);
+    populateReply("edit", post, null);
   }
 
   const checkLen =
-    post.comments.length > 0 ? (
-      <p onClick={toggleComments}>Show {post.comments.length} comments...</p>
+    post.comments && post.comments.length > 0 ? (
+      <span onClick={toggleComments} className="showComments">
+        <Icons iconName={'expand'} />
+        {post.comments.length}
+      </span>
     ) : (
-      <p>Be the first to comment!</p>
+      <p className="showComments">Be the first to comment!</p>
     );
 
   const display =
-    post.comments.length > 0 ? (
+    commentDetails.length > 0 ? (
       <ul ref={replyRef}>
-        {post.comments.map((comment) => {
-          const checkUser = user._id === comment.author._id ? true : false;
+        {commentDetails.map((comment) => {
+          const checkUser = user._id === comment.author?._id ? true : false;
           return (
-            <li key={comment._id}>
+            <li key={comment._id} id={comment._id}>
               <div>
                 <CommentCard
                   comment={comment}
@@ -93,19 +128,34 @@ export default function PostCard({ post, populateReply, user, slideIn }) {
                   scroll={handleScroll}
                   slideIn={slideIn}
                 />
-                <p
-                  hidden={checkUser ? true : false}
-                  onClick={() => openComment("reply", comment)}
-                >
-                  Reply
-                </p>
-                <button
-                  hidden={checkUser ? false : true}
-                  type="button"
-                  onClick={() => openComment("edit", comment)}
-                >
-                  Edit
-                </button>
+                <div className="interactBtn">
+                  <span
+                    hidden={checkUser ? true : false}
+                    onClick={() => openComment("reply", comment)}
+                  >
+                    <Icons iconName={"comment"} />
+                  </span>
+                  <span
+                    hidden={checkUser ? false : true}
+                    onClick={() => openComment("edit", comment)}
+                  >
+                    <Icons iconName={"edit"} />
+                  </span>
+                  <span
+                    hidden={comment.likes.includes(user._id)}
+                    className="like-icon"
+                    onClick={() => handleCommentVote(comment._id, "up")}
+                  >
+                    <Icons iconName={"heart"} />
+                  </span>
+                  <span
+                    hidden={!comment.likes.includes(user._id)}
+                    className="dislike-icon"
+                    onClick={() => handleCommentVote(comment._id, "down")}
+                  >
+                    <Icons iconName={"heart-filled"} />
+                  </span>
+                </div>
               </div>
             </li>
           );
@@ -116,29 +166,34 @@ export default function PostCard({ post, populateReply, user, slideIn }) {
   const userIcon = imgSrc ? <img src={imgSrc} className="icon" /> : null;
 
   const buttons =
-    user._id === post.author._id ? (
+    user._id === post.author?._id ? (
       <div className="interactBtn">
-        <button type="button" onClick={openEdit}>
-          Edit
-        </button>
-        <button type="button" onClick={() => handleDelete(post._id)}>
-          Delete
-        </button>
+        <span onClick={openEdit}>
+          <Icons iconName={"edit"} />
+        </span>
+        <span onClick={() => handleDelete(post._id)}>
+          <Icons iconName={"delete"} />
+        </span>
       </div>
     ) : (
       <div className="interactBtn">
-        <button type="button" onClick={() => handleVote("up")}>
-          Like
-        </button>
-        <button type="button" onClick={() => handleVote("down")}>
-          Dislike
-        </button>
-        <button
-          type="button"
-          onClick={() => openComment("comment", post, null)}
+        <span
+          hidden={post.likes.includes(user._id)}
+          className="like-icon"
+          onClick={() => handleVote("up")}
         >
-          Comment
-        </button>
+          <Icons iconName={"heart"} />
+        </span>
+        <span
+          hidden={!post.likes.includes(user._id)}
+          className="dislike-icon"
+          onClick={() => handleVote("down")}
+        >
+          <Icons iconName={"heart-filled"} />
+        </span>
+        <span onClick={() => openComment("comment", post, null)}>
+          <Icons iconName={"comment"} />
+        </span>
       </div>
     );
 
@@ -146,20 +201,25 @@ export default function PostCard({ post, populateReply, user, slideIn }) {
     <div className="postCard">
       {userIcon}
       <p>
-        <Link to={`/users/${post.author._id}`}>{post.author.username}</Link>
+        <Link className="user-link" to={`/users/${post.author?._id}`}>
+          {post.author?.username}
+        </Link>
       </p>
-      <p>{post.title}</p>
+      <p className="postTitle">{post.title}</p>
       <p>{post.content}</p>
-      <p>{post.date}</p>
-      <p>{post.likes.length}</p>
+      <p className="likes">Score: {post.likes?.length}</p>
+      <p className="timestamp">{new Date(post.date).toLocaleString()}</p>
+
       {buttons}
       {displayCom ? (
         <div className="commentsSection">
           {display}
-          <p onClick={toggleComments}>collapse</p>
+          <span onClick={toggleComments} className="showComments">
+            <Icons iconName={'unexpand'} />
+          </span>
         </div>
       ) : (
-        { checkLen }
+        <div>{checkLen}</div>
       )}
     </div>
   );

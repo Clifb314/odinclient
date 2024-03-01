@@ -3,7 +3,8 @@ import { readInbox, findOrCreate } from "../utils/dataAccess";
 import InboxReply from "./inboxReply";
 import InboxList from "./inboxList";
 import { checkUser } from "../utils/auth";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useAuthContext } from "../utils/useAuth";
 
 
 export default function InboxView() {
@@ -13,17 +14,19 @@ export default function InboxView() {
     const [options, setOptions] = useState([])
     const [searchString, setSearchString] = useState('')
     const [dropDownView, setDropDownView] = useState(false)
-
-
-    const friend = useParams()
+    //const [user, setUser] = useState(null)
+    const {user} = useAuthContext()
+    const query = useSearchParams()
+    const friend = query ? query.friend : null
+    const navi = useNavigate()
+    //const friend = useParams()
 
 
     function getFriends() {
-        const friends = checkUser().friends
-        setFriendsList(friends)
+        setFriendsList(user.friends)
         let shortList = []
-        for (let i = 0; i < 5 && i < friends.length - 1; i++) {
-            shortList.push(friends[i])
+        for (let i = 0; i < 5 && i < user.friends.length - 1; i++) {
+            shortList.push(user.friends[i])
         }
         setOptions(shortList)
     }
@@ -42,7 +45,6 @@ export default function InboxView() {
     function filterOptions(e) {
         const {value} = e.target
         setSearchString(value)
-        const len = value.length
         const regexStr = new RegExp(`^[\w]*${value}[\w]*$`)
         const filteredArr = friendsList.filter(friend => {
             return regexStr.test(friend.username)
@@ -60,9 +62,10 @@ export default function InboxView() {
             setShowTo(false)
             setSearchString('')
             let shortList = []
-            for (let i = 0; i < 5 && i < friends.length - 1; i++) {
-                shortList.push(friends[i])
+            for (let i = 0; i < 5 && i < friendsList.length; i++) {
+                shortList.push(friendsList[i])
             }
+            console.log(shortList)
             setOptions(shortList)
         } else {
             setShowTo(true)
@@ -71,7 +74,7 @@ export default function InboxView() {
 
     const dropDown = dropDownView 
       ? <div className="dropDown">
-        <h3>Friends</h3>
+        <h5>Friends</h5>
         {options.map(option => {
             return <p key={option._id}
              onClick={() => findFromRedirect(option._id)}>
@@ -85,10 +88,11 @@ export default function InboxView() {
         //use params to bring up a user after clicking from their page
         //let's check for messages to friend.id and return the most recent message chain
         //if none, create a new one
-        if (friend.id) {
+        if (friend?.id) {
             findFromRedirect(friend.id)
         }
         getFriends()
+        console.log(friendsList)
     }, [])
 
 
@@ -96,16 +100,17 @@ export default function InboxView() {
 
 
     return (
-        <div>
-            <div className="sidebar">
+        <div className="inbox">
+            <div className="convos">
                 <h2>Conversations</h2>
 
                 <button type="button" className={showTo ? 'closeMsg' : 'newMsg'}
                  onClick={startChain}>
-                    {showTo ? '+' : 'X'}
+                    {!showTo ? '+' : 'X'}
                 </button>
 
-                <input type="text" hidden={!showTo} name="to" id="to" 
+                <input className="friendSearch" type={showTo ? 'text' : 'hidden'} name="to" id="to" 
+                  placeholder="type in a user to message"
                   value={searchString}
                   onChange={filterOptions}
                   onFocus={() => setDropDownView(true)}
@@ -113,7 +118,7 @@ export default function InboxView() {
                 {dropDown}
                 <InboxList handleClickedMsg={handleClickedMsg} />
                 </div>
-            <div className="mainDisp"><InboxReply openMsg={openMsg} /></div>
+            <InboxReply openMsg={openMsg} user={user} />
         </div>
     )
 }

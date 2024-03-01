@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {v4 as uuidv4} from 'uuidv4'
+import {v4 as uuidv4} from 'uuid'
 import { sendInbox, inboxDetail } from "../utils/dataAccess";
 
 
 
-export default function InboxReply({openMsg, userid}) {
+export default function InboxReply({openMsg, user}) {
     const [reply, setReply] = useState('')
     const [chain, setChain] = useState([])
     const [title, setTitle] = useState('')
@@ -37,20 +37,20 @@ export default function InboxReply({openMsg, userid}) {
 
     const displayChain = chain && chain.length > 0 ?
     chain.map(msg => {
-        const side = msg.to.username === user._id ? 'left' : 'right'
+        const side = msg.to === user._id ? 'left' : 'right'
         return (
             <div key={uuidv4()} className={`inboxItem ${side}`}>
                 {/* icon */}
                 <p>{msg.from.username}</p>
                 <p>{msg.to.username}</p>
                 <p>{msg.content}</p>
-                <p>{msg.date}</p>
+                <p className="timestamp">{new Date(msg.date).toLocaleString()}</p>
             </div>
         )
     }) : 
     <div className="empty"></div>
 
-    const displayTitle = chain[0].title ? <p>{chain[0].title}</p> : null
+    const displayTitle = chain[0]?.title ? <h2>{chain[0].title}</h2> : null
 
 
     function handleChange(e) {
@@ -64,7 +64,7 @@ export default function InboxReply({openMsg, userid}) {
             content: reply,
             date: new Date(),
             head: openMsg._id ? openMsg._id : null, //get from prop
-            title: openMsg.new ? title : '', //will only have title for first msg (?)
+            title: openMsg?.new ? title : '', //will only have title for first msg (?)
             seen: false,
         }
         const response = await sendInbox(message)
@@ -75,13 +75,13 @@ export default function InboxReply({openMsg, userid}) {
     return (
         <div className="inboxReply">
             {/* message chain here */}
-            <div className="fullChain">
+            <div className="convoChain">
                 {displayTitle}
                 {displayChain}
             </div>
             <form id="replyForm" onSubmit={handleSubmit}>
-                <input hidden={openMsg.new ? false : true}
-                 type="text" name="content"
+                <input type={openMsg?.new ? 'text' : 'hidden'} 
+                 name="content"
                  placeholder="Title (optional)" 
                  value={title} 
                  onChange={(e) => setTitle(e.target.value)} 
@@ -89,7 +89,7 @@ export default function InboxReply({openMsg, userid}) {
                 <input type="text" name="content" placeholder="Reply here.."
                  value={reply} 
                  onChange={handleChange} />
-                <button form="replyForm" type="submit">Send</button>
+                <button className="submitBtn" form="replyForm" type="submit">Send</button>
             </form>
         </div>
     )

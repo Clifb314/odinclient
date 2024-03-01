@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Icons from "../utils/svgHelper";
 import {
   createComment,
   createPost,
@@ -21,11 +22,12 @@ export default function PopupForm({ options, toggleOpen, slideIn }) {
     if (options.type === "post") {
       post.title = title;
     } else if (options.type === "reply") {
-      post.replyTo = commentRef._id;
+      post.replyTo = options.commentRef._id;
     }
 
     const submitPost = options.type === "post" ? createPost : createComment;
-    const response = submitPost(post, options.postRef._id);
+    const submitOptions = options.type === "post" ? null : options.postRef._id
+    const response = submitPost(post, submitOptions);
     if (response.err) slideIn("error", response.err);
     else {
       slideIn("success", `${options.type} submitted!`);
@@ -37,16 +39,17 @@ export default function PopupForm({ options, toggleOpen, slideIn }) {
     let post = {
       content,
     };
-    if (options.type === "edit" && !options.commentRef) {
+    let editID
+    if (!options.commentRef) {
       post.title = title;
-      editID = postid;
+      editID = options.postRef._id;
     } else {
       //post.replyTo = replying
-      editID = commentRef._id;
+      editID = options.commentRef._id;
     }
 
-    const submitEdit = type === "post" ? editPost : editComment;
-    const response = submitEdit(post, editID, postRef._id);
+    const submitEdit = !options.commentRef ? editPost : editComment;
+    const response = submitEdit(post, editID);
     if (response.err) slideIn("error", response.err);
     else {
       slideIn("success", `${options.type} submitted!`);
@@ -54,9 +57,14 @@ export default function PopupForm({ options, toggleOpen, slideIn }) {
   }
 
   useEffect(() => {
-    if (type === "edit") {
-      setContent(commentRef.content);
-      editing.title ? setTitle(editing.title) : null;
+    if (options.type === "edit") {
+      if (options.commentRef) {
+        setContent(options.commentRef.content);
+      } else {
+        setTitle(options.postRef.title)
+        setContent(options.postRef.content)
+      }
+      //editing.title ? setTitle(editing.title) : null;
     }
     return () => {
       setContent("");
@@ -64,42 +72,51 @@ export default function PopupForm({ options, toggleOpen, slideIn }) {
     };
   }, []);
 
+
+  const buttons = options.type === 'edit' ?
+    <div className="Btn-container">
+      <button
+        type="button"
+        className="editBtn"
+        onClick={handleEdit}
+      >
+        Edit
+      </button>
+    </div>
+  :
+    <div className="Btn-container">
+      <button
+        type="button"
+        className="submitBtn"
+        onClick={handleSubmit}
+      >
+        Send
+      </button>
+    </div>
+
+
+
   return (
-    <div className="popup">
-      <form id="popup Form">
-        <input
-          hidden={type === "post" ? false : true}
-          type="text"
-          name="title"
-          id="title"
-          value={title}
-          onChange={setTitle}
-        />
+    <div className="form-container">
+      <form id="popup-form">
+        <div hidden={options.commentRef}>
+          <label htmlFor="title">Title: </label>
+          <input
+            disabled={options.commentRef}
+            name="title"
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        </div>
         <textarea
           value={content}
+          placeholder={`Type your ${options.type} here..`}
           id="content"
           name="content"
-          onChange={setContent}
+          onChange={(e) => setContent(e.target.value)}
         />
-        <button type="button" className="Btn cancel" onClick={toggleOpen}>
-          Cancel
-        </button>
-        <button
-          hidden={editing ? true : false}
-          type="button"
-          className="Btn send"
-          onClick={handleSubmit}
-        >
-          Send
-        </button>
-        <button
-          hidden={editing ? false : true}
-          type="button"
-          className="Btn edit"
-          onClick={handleEdit}
-        >
-          Edit
-        </button>
+        {buttons}
       </form>
     </div>
   );

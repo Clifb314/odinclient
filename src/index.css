@@ -1,13 +1,587 @@
+:root {
+  --boxShadow: 4px 2px 11px 0px rgba(0, 0, 0, 0.83);
+  --cardColor: rgb(170, 176, 184);
+  --logoFontColor: rgb(80, 16, 255);
+}
+
+/* Material Icons */
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  cursor: pointer;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+/* Main layout */
+div.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: rgb(202, 214, 218);
+}
+
+div.components, div.register {
+  display: flex;
+  flex: 1 0 auto;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Forms */
+form {
+  margin: 12px;
+  border-radius: 5px;
+  height: 25%;
+  width: 25%;
+  box-shadow: var(--boxShadow);
+  padding: 12px;
+  background-color: var(--cardColor);
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  justify-content: center;
+}
+
+label,
+input {
+  display: block;
+}
+
+label {
+  margin-bottom: 4px;
+}
+
+input {
+  width: min(80%, 300px);
+  border-radius: 6px;
+  padding: 8px;
+  border: 1px solid rgb(207, 207, 255);
+}
+
+/* Header */
+div.header {
+  width: 100%;
+  height: 10vh;
+  border-bottom: 2px solid black;
+  position: relative;
+  padding: 12px;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+div.logo {
+  font-size: 24px;
+  color: var(--logoFontColor);
+}
+
+div.header h1 {
+  margin: 0;
+}
+
+div.header a {
+  text-decoration: none;
+  cursor: pointer;
+  color: black;
+  font-weight: 700;
+}
+
+div.header li {
+  list-style-type: none;
+  font-size: 24px;
+  display: inline-block;
+  transition: all ease-in-out 150ms;
+  padding: 10px;
+}
+
+div.header li + li {
+  border-left: 1px solid black;
+}
+
+div.header li:hover {
+  background-color: rgb(108, 108, 245);
+  color: white;
+  border: 1px solid white;
+}
+
+div.header ul {
+  padding: 0;
+  margin: 0;
+}
+
+/* mouseover friend requests */
+div.friendReqs {
+  z-index: 10;
+  position: absolute;
+  background-color: rgb(215, 216, 218);
+  box-shadow: var(--boxShadow);
+  padding: 6px;
+}
+
+div.friendReqs a {
+  text-decoration: none;
+  cursor: pointer;
+  color: black;
+  font-size: 12px;
+  font-weight: inherit;
+}
+
+div.friendReqs button {
+  width: 2rem;
+}
+
+div.friendReqs li {
+  list-style-type: none;
+  margin: 4px;
+  background-color: azure;
+  transition: all ease-in-out 100ms;
+}
+
+div.friendReqs li:hover {
+  background-color: rgb(185, 190, 190);
+}
+
+/* Register */
+div.registerText {
+  flex: 1 0 auto;
+  text-align: center;
+}
+
+div.registerText h1 {
+  font-size: 24px;
+  color: rgb(80, 16, 255);
+}
+
+div.registerText p {
+  font-size: 18px;
+}
+
+/* buttons */
+button {
+  border-radius: 10px;
+  margin: 4px;
+  padding: 2px 0px;
+  cursor: pointer;
+  width: 60px;
+  border: 1px solid black;
+  transition: all ease-in-out 100ms;
+  font-weight: 700;
+  text-align: center;
+  display: inline-block;
+}
+
+span + span {
+  margin: 4px 6px;
+}
+
+span.like-icon svg {
+  fill: black;
+}
+
+span.dislike-icon svg {
+  fill: red;
+}
+
+div.commentsSection svg {
+  height: 18px;
+  width: 18px;
+}
+
+div.Btn-container {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+button.submitBtn {
+  color: white;
+  background-color: rgb(31, 156, 31);
+}
+
+div.closeBtn {
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  font-size: 16px;
+  border-radius: 50%;
+  width: 2em;
+  height: 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all ease-in 250ms;
+  cursor: pointer;
+}
+
+div.closeBtn:hover {
+  color: red;
+  border: 1px solid red;
+}
+
+div.interactBtn {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* components display */
+div.components {
+  flex: 1;
+}
+
+/* Feed/posts */
+div.feed {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 300px));
+  gap: 12px;
+  overflow: auto;
+  padding: 6px;
+}
+
+div.postCard {
+  padding: 6px;
+  text-align: left;
+  box-shadow: var(--boxShadow);
+  overflow: auto;
+  max-height: 50%;
+  position: relative;
+}
+
+div.postCard p {
+  margin: 4px;
+}
+
+div.postCard p.postTitle {
+  font-weight: 700;
+}
+
+.showComments {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
+
+/* floating button */
+div.popup {
+  position: fixed;
+  bottom: 5%;
+  right: 5%;
+}
+
+div.form-container {
+  height: 100%;
+}
+
+form#popup-form {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 10px;
+
+}
+
+form#popup-form > input {
+  padding: 2px;
+  width: min(10em, 40%);
+}
+
+form#popup-form > textarea {
+  margin: 4px 0;
+}
+
+div.popup.closed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+  background-color: slateblue;
+  color: white;
+}
+
+div.popup.open {
+  width: min(25%, 300px);
+  height: min(25%, 300px);
+}
+
+/* comments */
+
+div.commentSection {
+  max-height: 25rem;
+  overflow: auto;
+}
+
+div.commentCard {
+  width: 100%;
+  font-size: 12px;
+  padding: 4px;
+}
+
+div.commentsSection ul {
+  list-style-type: none;
+  padding-left: 20px;
+}
+
+div.replyPreview {
+  z-index: 10;
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  box-shadow: var(--boxShadow);
+}
+
+/* Account page */
+
+div.accountPage {
+  flex: 1;
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+div.userDetails {
+  height: 100%;
+  flex: 1;
+  border: 1px solid black;
+  padding: 14px;
+  overflow-y: auto;
+}
+
+div.userDetails > form#accountForm {
+  width: 100%;
+  height: auto;
+  margin: 0;
+}
+
+div.feed.acct {
+  width: auto;
+  flex: 3;
+}
+
+div.friendsList ul {
+  list-style-type: none;
+  padding-left: 12px;
+  margin: 8px 0;
+}
+
+div.friendsList h2 {
+  margin: 8px 2px;
+}
+
+/* Register */
+div.register {
+  flex: 1;
+  width: 100%;
+}
+
+div.validationErrors {
+  background-color: rgb(214, 127, 127);
+}
+
+/* notification */
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+div.slideIn {
+  z-index: 10;
+  position: fixed;
+  bottom: 5%;
+  left: 5%;
+  animation: slide-in 50ms;
+}
+
+/* Inbox */
+
+div.inbox {
+  display: flex;
+  flex: 1;
+  height: 100%;
+}
+
+div.convos {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+}
+
+p.timestamp {
+  font-size: 10px;
+  font-style: italic;
+  text-align: right;
+}
+
+p.username {
+  font-weight: 700;
+}
+
+div.inboxList {
+  padding: 6px;
+  font-size: 14px;
+}
+
+div.inboxList.read {
+  color: blue
+}
+
+div.inboxList.unread {
+  color: blueviolet;
+
+}
+
+div.inboxReply {
+  flex: 5;
+  display: flex;
+  flex-direction: column;
+}
+
+div.convoChain {
+  flex: 12;
+  display: flex;
+  padding: 0 6px;
+  flex-direction: column;
+  overflow-y: auto;
+  justify-content: space-evenly;
+  flex-wrap: nowrap;
+}
+
+form#replyForm {
+  display: block;
+  flex: 1;
+  width: 100%;
+  margin: 0;
+}
+
+div.inboxItem {
+  padding: 8px;
+  height: fit-content;
+  border-radius: 8px;
+}
+
+div.inboxItem.left {
+  align-self: flex-start;
+  background-color: rgb(145, 145, 224);
+}
+
+div.inboxItem.right {
+  align-self: flex-end;
+  background-color: rgb(177, 177, 177);
+}
+
+div.empty {
+  flex: 1;
+  background-color: rgb(177, 177, 177);
+}
+
+div.dropdown {
+  border-bottom: 1px solid black;
+  background-color: white;
+  transition: all ease-in-out 50ms;
+  z-index: 10;
+  position: absolute;
+}
+
+div.dropdown > p,
+div.convoList {
+  margin: 5px 0;
+  cursor: pointer;
+  background-color: white;
+}
+
+div.dropdown > p:hover,
+div.convoList:hover {
+  background-color: rgb(177, 177, 177);
+}
+
+button.closeMsg,
+button.newMsg {
+  z-index: 10;
+  position: absolute;
+  height: 2em;
+  width: 2em;
+  top: 5%;
+  right: 5%;
+  border-radius: 50%;
+  transition: all ease-in-out 100ms;
+}
+
+button.closeMsg {
+  background-color: rgb(247, 128, 128);
+}
+
+button.newMsg {
+  background-color: rgb(137, 137, 252);
+}
+
+@keyframes grow {
+  from {
+    width: 0px;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+input.friendSearch {
+  animation: grow 2s ease-in forwards;
+  width: 100%;
 }
