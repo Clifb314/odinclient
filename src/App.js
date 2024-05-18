@@ -8,19 +8,19 @@ import { AuthProvider } from './utils/useAuth';
 
 function App() {
 
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState({_id: null})
 
 
   useEffect(() => {
     const myUser = checkUser()
     setUser(myUser)
 
-    return () => setUser(null)
+    return () => setUser({_id: null})
   },[])
 
   function handleLogout() {
     logout()
-    setUser(null)
+    setUser({_id: null})
   }
 
 

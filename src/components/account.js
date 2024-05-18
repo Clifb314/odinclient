@@ -10,7 +10,7 @@ export default function Account() {
   const [myPage, setMyPage] = useState(null);
   const [editting, setEditting] = useState(false);
 
-  const { user } = useAuthContext();
+  const { user, logoutUser } = useAuthContext();
   const redirect = useNavigate();
 
   //could get from token instead
@@ -28,7 +28,11 @@ export default function Account() {
       //     }}
       // })
       const fetchUser = await getAccount();
-      if (fetchUser.err) redirect("/login");
+      console.log(fetchUser)
+      if (fetchUser.err) {
+        logoutUser()
+        return redirect("/login");
+      }
       //console.log(fetchUser)
       let updatePosts = [...fetchUser.posts].map((post) => {
         return {

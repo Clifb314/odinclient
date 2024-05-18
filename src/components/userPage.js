@@ -21,7 +21,9 @@ export default function UserPage() {
         const response = await getUserDetail(id)
         if (response.err) return null //error handling
         setUserDetails(response)
+        searchParam.append({username: response.username})
         console.log(user)
+        console.log(searchParam)
         setFriended(response?.friends?.includes(user._id))
         if (!response.icon) return
         else {

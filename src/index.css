@@ -209,7 +209,7 @@ button {
 }
 
 span + span {
-  margin: 4px 6px;
+  margin: 0px 6px;
 }
 
 span.like-icon svg {

@@ -16,19 +16,29 @@ export default function InboxView() {
     const [dropDownView, setDropDownView] = useState(false)
     //const [user, setUser] = useState(null)
     const {user} = useAuthContext()
-    const query = useSearchParams()
-    const friend = query ? query.friend : null
+    
+    
+    const [searchParams, setSearchParams] = useSearchParams()
+    
+    //const query = useSearchParams()
+    //const friend = query ? query.friend : null
+    
+    
+    
+    
     const navi = useNavigate()
     //const friend = useParams()
 
 
     function getFriends() {
-        setFriendsList(user.friends)
-        let shortList = []
-        for (let i = 0; i < 5 && i < user.friends.length - 1; i++) {
-            shortList.push(user.friends[i])
+        if (user.friends) {
+            setFriendsList(user.friends)
+            let shortList = []
+            for (let i = 0; i < 5 && i < user.friends.length - 1; i++) {
+                shortList.push(user.friends[i])
+            }
+            setOptions(shortList)    
         }
-        setOptions(shortList)
     }
 
     async function handleClickedMsg(msg) {
@@ -36,23 +46,37 @@ export default function InboxView() {
         setOpenMsg(msg)
     }
 
-    async function findFromRedirect(id) {
-        const msg = await findOrCreate(id)
+    async function findFromRedirect(friendID, username) {
+        if (friendID === null) return
+        const msg = await findOrCreate(friendID)
+        console.log(msg)
         if (msg.err) return msg.err //error handling
+        else if (msg.new) {
+            msg.to = {
+                _id: friendID,
+                username,
+            }
+            msg.from = user
+            setOpenMsg(msg)
+        }
         else return setOpenMsg(msg)
     }
 
     function filterOptions(e) {
         const {value} = e.target
         setSearchString(value)
-        const regexStr = new RegExp(`^[\w]*${value}[\w]*$`)
+        const regStr = `[\w]*${value}[\w]*`
+        const regexStr = new RegExp(regStr, 'i')
         const filteredArr = friendsList.filter(friend => {
             return regexStr.test(friend.username)
         })
         if (filteredArr.length > 0) {
             setOptions(filteredArr)
         } else {
-            setOptions(['User not found'])
+            setOptions([{
+                _id: null,
+                username: 'User not found'
+            }])
         }
     }
 
@@ -77,7 +101,7 @@ export default function InboxView() {
         <h5>Friends</h5>
         {options.map(option => {
             return <p key={option._id}
-             onClick={() => findFromRedirect(option._id)}>
+             onClick={() => findFromRedirect(option._id, option.username)}>
                 {option.username}
             </p>
         })}
@@ -88,11 +112,12 @@ export default function InboxView() {
         //use params to bring up a user after clicking from their page
         //let's check for messages to friend.id and return the most recent message chain
         //if none, create a new one
-        if (friend?.id) {
-            findFromRedirect(friend.id)
+        if (searchParams.get('friend')) {
+            const friendID = searchParams.get('friend')
+            const username = searchParams.get('username')
+            findFromRedirect(friendID, username)
         }
         getFriends()
-        console.log(friendsList)
     }, [])
 
 
@@ -113,8 +138,8 @@ export default function InboxView() {
                   placeholder="type in a user to message"
                   value={searchString}
                   onChange={filterOptions}
-                  onFocus={() => setDropDownView(true)}
-                  onBlur={() => setDropDownView(false)} />
+                  onFocus={() => setDropDownView(true)}/>
+                <button display={dropDownView ? 'none' : 'block'} onClick={() => setDropDownView(false)}>X</button>
                 {dropDown}
                 <InboxList handleClickedMsg={handleClickedMsg} />
                 </div>

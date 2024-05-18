@@ -78,7 +78,7 @@ export default function Header() {
                 <div className="logo">
                     <h1>ClifBook</h1>
                     </div>
-                {user ?
+                {user._id ?
                     <ul className="authLinks">
                         <li><Link to='/inbox'>Inbox</Link></li>
                         <li><Link to='/account'>

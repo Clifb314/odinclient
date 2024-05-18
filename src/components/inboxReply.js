@@ -14,7 +14,7 @@ export default function InboxReply({openMsg, user}) {
 
         else if (openMsg.new) {
             const newMsg = {
-                to: openMsg.to,
+                to: openMsg.to, //expecting an obj w/ username and _id
                 from: user._id,
                 content: 'Type your first message below!',
                 date: null,
@@ -57,10 +57,11 @@ export default function InboxReply({openMsg, user}) {
         setReply(e.target.value)
     }
 
-    async function handleSubmit() {
+    async function handleSubmit(e) {
+        e.preventDefault()
         const message = {
-            to: openMsg.from.username,
-            from: null, //get user_id from somewhere
+            to: openMsg.from._id,
+            from: user._id, //get user_id from somewhere
             content: reply,
             date: new Date(),
             head: openMsg._id ? openMsg._id : null, //get from prop
@@ -68,8 +69,13 @@ export default function InboxReply({openMsg, user}) {
             seen: false,
         }
         const response = await sendInbox(message)
+        console.log(response)
         if (response.err) return response.message //error handling
-        else return //add message to chain
+        else {
+            setChain([...chain, message])
+            setReply('')
+            setTitle('')
+        }
     }
 
     return (

@@ -420,7 +420,7 @@ export async function delComment(id, postid) {
       headers: authHeader(),
     });
     const data = await response.json();
-    return {err: data.message};
+    return {message: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
@@ -436,7 +436,7 @@ export async function likeComment(id, direction) {
       headers: authHeader(),
     });
     const data = await response.json();
-    return {err: data.message};
+    return {message: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
@@ -485,6 +485,7 @@ export async function findOrCreate(friendid) {
       headers: authHeader()
     })
     const data = await response.json()
+    console.log(response)
     if (!response.ok) return {err: data.message}
     else return data
   } catch(err) {

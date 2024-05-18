@@ -5,7 +5,11 @@ import { login, logout } from "./auth";
 const authContext = createContext(null)
 
 export function useAuth() {
-    const [auth, setAuth] = useState({loggedIn: false, user: false})
+    const [auth, setAuth] = useState({loggedIn: false, 
+        user: {
+            _id: null
+        }
+    })
 
     function saveLogin(user) {
         //const response = await login()
@@ -21,7 +25,12 @@ export function useAuth() {
     function saveLogout() {
         logout()
         console.log('logged out')
-        setAuth(false)
+        setAuth({
+            loggedIn: false,
+            user: {
+                _id: null
+            }
+        })
     }
 
     return {
@@ -37,12 +46,12 @@ export function AuthProvider({children, user, setUser}) {
     function updateUser(details) {
         setUser(details)
         console.log(user)
-        setTimeout(logoutUser, 60 * 60 * 1000)
+        setTimeout(logoutUser, 30 * 60 * 1000)
     }
 
     function logoutUser() {
         logout()
-        setUser(null)
+        setUser({_id: null})
         console.log('logged out from app')
         console.log(user)
     }

@@ -15,6 +15,8 @@ export default function PostCard({ post, populateReply, slideIn }) {
   const [displayCom, setDisplayCom] = useState(false);
   const [imgSrc, setImgSrc] = useState(null);
   const [commentDetails, setCommentDetails] = useState([]);
+  const [clickedLike, setClickedLike] = useState(null)
+  const [likedComments, setLikedComments] = useState([])
   const { user } = useAuthContext();
   async function displayIcon(id) {
     const imgBlob = await getUserIcon(id);
@@ -23,7 +25,7 @@ export default function PostCard({ post, populateReply, slideIn }) {
     else return setImgSrc(URL.createObjectURL(imgBlob));
   }
 
-  async function getCommentsDetaills(postid) {
+  async function getCommentsDetails(postid) {
     const response = await commentList(postid);
     if (response.err) slideIn("error", response.err);
     else setCommentDetails(response);
@@ -36,7 +38,7 @@ export default function PostCard({ post, populateReply, slideIn }) {
     }
 
     if (post.comments?.length > 0) {
-      getCommentsDetaills(post._id);
+      getCommentsDetails(post._id);
     }
   }, []);
 
@@ -53,6 +55,8 @@ export default function PostCard({ post, populateReply, slideIn }) {
       slideIn("error", response.err);
     } else {
       const msg = direction === "up" ? "Nice!" : "Ick!";
+      const setFill = direction === "up" ? true : false
+      setClickedLike(setFill)
       slideIn("success", msg);
     }
   }
@@ -62,6 +66,39 @@ export default function PostCard({ post, populateReply, slideIn }) {
     if (response.err) slideIn("error", response.err);
     else {
       const msg = direction === "up" ? "Nice!" : "Ick!";
+      if (direction === 'up') {
+        //update comments from state
+        console.log(commentDetails)
+        setCommentDetails(
+          commentDetails.map(comment => {
+
+            if (comment._id === id) {
+              const output = {
+                ...comment,
+                likes: [...comment.likes, user._id]
+              }
+              return output
+            } else {
+              return comment
+            }
+          }) 
+        )
+        console.log(commentDetails)
+      } else {
+        console.log(commentDetails)
+        setCommentDetails(
+          commentDetails.map(comment => {
+            if (comment._id === id) {
+              const output = {
+                ...comment,
+                likes: comment.likes.filter(liker => liker !== user._id)
+              }
+              return output
+            } else return comment
+          })
+        )
+        console.log(commentDetails)
+      }
       slideIn("success", msg);
     }
   }
@@ -119,6 +156,37 @@ export default function PostCard({ post, populateReply, slideIn }) {
       <ul ref={replyRef}>
         {commentDetails.map((comment) => {
           const checkUser = user._id === comment.author?._id ? true : false;
+          const buttons =
+            <div className="interactBtn">
+            <span
+              hidden={checkUser ? true : false}
+              onClick={() => openComment("reply", comment)}
+            >
+              <Icons iconName={"comment"} />
+            </span>
+            <span
+              hidden={checkUser ? false : true}
+              onClick={() => openComment("edit", comment)}
+            >
+              <Icons iconName={"edit"} />
+            </span>
+            <span
+              hidden={(comment.likes.includes(user._id) && !likedComments.includes(comment._id)) || likedComments.includes(comment._id)}
+              className="like-icon"
+              onClick={() => handleCommentVote(comment._id, "up")}
+            >
+              <Icons iconName={"heart"} />
+            </span>
+            <span
+              hidden={!comment.likes.includes(user._id) && !likedComments.includes(comment._id)}
+              className="dislike-icon"
+              onClick={() => handleCommentVote(comment._id, "down")}
+            >
+              <Icons iconName={"heart-filled"} />
+            </span>
+          </div>
+
+
           return (
             <li key={comment._id} id={comment._id}>
               <div>
@@ -128,34 +196,8 @@ export default function PostCard({ post, populateReply, slideIn }) {
                   scroll={handleScroll}
                   slideIn={slideIn}
                 />
-                <div className="interactBtn">
-                  <span
-                    hidden={checkUser ? true : false}
-                    onClick={() => openComment("reply", comment)}
-                  >
-                    <Icons iconName={"comment"} />
-                  </span>
-                  <span
-                    hidden={checkUser ? false : true}
-                    onClick={() => openComment("edit", comment)}
-                  >
-                    <Icons iconName={"edit"} />
-                  </span>
-                  <span
-                    hidden={comment.likes.includes(user._id)}
-                    className="like-icon"
-                    onClick={() => handleCommentVote(comment._id, "up")}
-                  >
-                    <Icons iconName={"heart"} />
-                  </span>
-                  <span
-                    hidden={!comment.likes.includes(user._id)}
-                    className="dislike-icon"
-                    onClick={() => handleCommentVote(comment._id, "down")}
-                  >
-                    <Icons iconName={"heart-filled"} />
-                  </span>
-                </div>
+                {user._id === null ? <p>Log in to interact!</p>
+                 : buttons}
               </div>
             </li>
           );
@@ -178,14 +220,14 @@ export default function PostCard({ post, populateReply, slideIn }) {
     ) : (
       <div className="interactBtn">
         <span
-          hidden={post.likes.includes(user._id)}
+          hidden={(post.likes.includes(user._id) && clickedLike === null) || clickedLike === true}
           className="like-icon"
           onClick={() => handleVote("up")}
         >
           <Icons iconName={"heart"} />
         </span>
         <span
-          hidden={!post.likes.includes(user._id)}
+          hidden={(!post.likes.includes(user._id) && clickedLike === null) || clickedLike === false}
           className="dislike-icon"
           onClick={() => handleVote("down")}
         >
@@ -210,7 +252,7 @@ export default function PostCard({ post, populateReply, slideIn }) {
       <p className="likes">Score: {post.likes?.length}</p>
       <p className="timestamp">{new Date(post.date).toLocaleString()}</p>
 
-      {buttons}
+      {user._id === null ? <p>Log in to interact!</p> : buttons}
       {displayCom ? (
         <div className="commentsSection">
           {display}
