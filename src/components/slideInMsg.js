@@ -6,7 +6,7 @@ export default function MsgBox(type, message, close) {
       <button type="button" className="close" onClick={close}>
         X
       </button>
-      <p>test</p>
+      <p>{message}</p>
     </div>
   );
 }

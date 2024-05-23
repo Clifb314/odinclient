@@ -15,7 +15,7 @@ function App() {
     const myUser = checkUser()
     setUser(myUser)
 
-    return () => setUser({_id: null})
+    return () => handleLogout()
   },[])
 
   function handleLogout() {

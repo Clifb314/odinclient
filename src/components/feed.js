@@ -19,6 +19,24 @@ export default function Feed() {
   const [slideIn, setSlideIn] = useState(null);
   const sorting = useParams().sorting;
 
+
+    async function getPosts() {
+      const query = sorting ? sorting : 'top'
+      const response = await postList(query);
+      if (response.err) displaySlideIn('error', response.err)
+      else setPosts(response)
+    }
+  
+  
+    useEffect(() => {
+      getPosts();
+  
+      return () => setPosts([]);
+    }, []);
+
+    
+  /* Alerts */
+
   function closeSlideIn() {
     setSlideIn(null);
   }
@@ -36,7 +54,9 @@ export default function Feed() {
     />
   ) : null;
 
-  //popup reply functions
+
+
+  /* New Post Button */
   function togglePopUp(keepOpen = false) {
     if (openPopUp) {
       setOpenPopUp(false);
@@ -68,22 +88,8 @@ export default function Feed() {
     </div>
   );
 
-  //  server requests
-  async function getPosts() {
-    const query = sorting ? sorting : 'top'
-    const response = await postList(query);
-    if (response.err) displaySlideIn('error', response.err)
-    else setPosts(response)
-  }
 
-
-  useEffect(() => {
-    getPosts();
-
-    return () => setPosts([]);
-  }, []);
-
-  //  render posts
+  /* Render Posts */
   const display =
     posts.length > 0 ? (
         posts.map((post) => {

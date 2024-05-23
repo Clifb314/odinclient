@@ -205,7 +205,7 @@ export default function PostCard({ post, populateReply, slideIn }) {
       </ul>
     ) : null;
 
-  const userIcon = imgSrc ? <img src={imgSrc} className="icon" /> : null;
+  const userIcon = imgSrc ? <div className="post-icon"><img alt={post.author.username + "'s icon"} src={imgSrc} className="icon" /></div> : null;
 
   const buttons =
     user._id === post.author?._id ? (
