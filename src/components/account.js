@@ -20,7 +20,21 @@ export default function Account() {
     file: null,
   };
 
-  const [myPage, setMyPage] = useState(null);
+  const userTemplate = {
+    userDetails: {
+      fName: '',
+      lName: '',
+      birthdate: '',
+      email: '',
+    },
+    username: '',
+    password: '',
+    checkPW: '',
+    oldPW: '',
+    posts: []
+  }
+
+  const [myPage, setMyPage] = useState(userTemplate);
   const [editting, setEditting] = useState(false);
   const [iconBlob, setIconBlob] = useState(null);
   const [previewIcon, setPreviewIcon] = useState(previewTemplate);
@@ -58,13 +72,11 @@ export default function Account() {
       const names = modifiedUser.fullName.split(" ");
       setMyPage({
         ...fetchUser,
-        userDetails: { ...modifiedUser },
+        userDetails: { ...modifiedUser, fName: names[0], lName: names[1] },
         posts: updatePosts,
         password: "",
         checkPW: "",
         oldPW: "",
-        fName: names[0],
-        lName: names[1],
       });
       if (fetchUser.icon) {
         const blob = await getIcon();
@@ -83,7 +95,7 @@ export default function Account() {
       getUser();
 
     }
-    return () => setMyPage(null);
+    return () => setMyPage(userTemplate);
   }, []);
 
 
@@ -94,40 +106,51 @@ export default function Account() {
     editting ? setEditting(false) : setEditting(true);
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    const { lName, fName } = e.target.name;
+    //const { lName, fName } = myPage.userDetails;
     //const body = JSON.parse(e.target)
     const body = {
       ...myPage,
-      userDetails: {
-        fullName: fName + " " + lName,
-      },
+      ...myPage.userDetails
     };
-    const submit = editAccount(body);
+    const submit = await editAccount(body);
     if (submit.err) return submit.err; //handle error
     //abort icon update if above fails
     else if (previewIcon.file) {
       const iconBody = new FormData();
       iconBody.append("icon", previewIcon.file);
-      const submitIcon = editIcon(iconBody);
+      const submitIcon = await editIcon(iconBody);
       if (submitIcon.err) console.log(submitIcon.err);
       else setPreviewIcon(previewTemplate);
     }
     toggle();
+    console.log(submit)
+
     return submit.message; //display submit.message
   }
 
   function handleChange(e) {
     const { value, name } = e.target;
-    setMyPage({ ...myPage, [name]: value });
+    const checker = ['fName', 'lName', 'birthdate', 'email']
+    if (checker.includes(name)) {
+      setMyPage({
+        ...myPage,
+        userDetails: {
+          ...myPage.userDetails,
+          [name]: value
+        }
+      })
+    } else {
+      setMyPage({ ...myPage, [name]: value });
+    }
   }
 
   function handleChangeIcon(e) {
     const { files } = e.target;
     setPreviewIcon({
       url: URL.createObjectURL(files[0]),
-      size: files[0].size + "bytes",
+      size: `${files[0].size / 1000} bytes`,
       file: files[0],
     });
   }
@@ -157,6 +180,7 @@ export default function Account() {
         id="icon"
         type="file"
         onChange={handleChangeIcon}
+        autoComplete="photo"
       />
       <p>Preview: </p>
       {previewIcon.url ? (
@@ -177,38 +201,39 @@ export default function Account() {
 
   const displayInfo = myPage ? (
     <div>
-      <h1>{userDetails.username}</h1>
-      <p>Name: {userDetails.userDetails.fullName}</p>
-      <p>Age: {userDetails.getAge}</p>
-      <p>Birthday: {userDetails.birthdate}</p>
-      <p>Email: {userDetails.userDetails.email}</p>
+      <h1>{myPage.username}</h1>
+      <p>Name: {myPage.userDetails.fullName}</p>
+      <p>Age: {myPage.getAge}</p>
+      <p>Birthday: {myPage.userDetails.birthdate}</p>
+      <p>Email: {myPage.userDetails.email}</p>
     </div>
   ) : (
     <p>Must be logged in to access this page</p>
   );
 
   const formOpts = [
-    { field: "name", label: "Name" },
-    { field: "email", label: "e-mail" },
-    { field: "fName", label: "First Name" },
-    { field: "lName", label: "Last Name" },
-    { field: "birthdate", label: "Birthday" },
-    { field: "password", label: "New Password" },
-    { field: "checkPW", label: "Re-enter New Password" },
-    { field: "oldPW", label: "Old Password" },
+    { field: "username", label: "Username", data: myPage.username, autocomplete: 'username', key: uuid() },
+    { field: "email", label: "e-mail", data: myPage.userDetails.email, autocomplete: 'email', key: uuid() },
+    { field: "fName", label: "First Name", data: myPage.userDetails.fName, autocomplete: 'given-name', key: uuid() },
+    { field: "lName", label: "Last Name", data: myPage.userDetails.lName, autocomplete: 'family-name', key: uuid() },
+    { field: "birthdate", label: "Birthday", data: myPage.userDetails.birthdate, autocomplete: null, key: uuid() },
+    { field: "password", label: "New Password", data: myPage.password, autocomplete: 'new-password', key: uuid() },
+    { field: "checkPW", label: "Re-enter New Password", data: myPage.checkPW, autocomplete: 'new-password', key: uuid() },
+    { field: "oldPW", label: "Current Password", data: myPage.oldPW, autocomplete: 'current-password', key: uuid() },
   ];
 
   const displayForm =
-    myPage && myPage.userDetails ? (
+    (
       <form id="accountForm" onSubmit={handleSubmit}>
         <p>User Details: </p>
-        {formOpts.map((input) => {
+        { formOpts.map((input, index) => {
           return (
             <FormHelper
-              key={uuid()}
+              key={index}
               field={input.field}
               label={input.label}
-              value={myPage[input.field]}
+              data={input.data}
+              auto={input.autocomplete}
               change={handleChange}
             />
           );
@@ -222,9 +247,7 @@ export default function Account() {
           Submit
         </button>
       </form>
-    ) : (
-      <p>Must be logged in to access this page</p>
-    );
+    )
 
   const friendsListDiv = myPage?.friends?.length > 0 ? (
     <FriendsList />

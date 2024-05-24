@@ -187,7 +187,6 @@ export async function getFriendsList() {
       headers: authHeader(),
     });
     const data = await response.json();
-    console.log(data)
     if (!response.ok) {
       return {err: data.message};
     } else {

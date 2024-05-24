@@ -17,7 +17,16 @@ const url = "http://localhost:5000/api/"
         } else {
             localStorage.setItem('user', JSON.stringify(data.user))
             localStorage.setItem('token', JSON.stringify(data.token))
-            setTimeout(logout, 60 * 60 * 1000)
+            setTimeout(() => {
+                console.log('Log out in 5mins')
+            }, 1000 * 60 * 55)
+            setTimeout(logout, (60 * 60 * 1000))
+            const start = Date.now()
+            console.log(start)
+            const end = start + (1000 * 60 * 60)
+            console.log(end)
+            console.log(`Will log out at ${new Date(end).toLocaleTimeString()}`)
+
             return {message: 'Logged in', user: data.user}
         }
     } catch(err) {

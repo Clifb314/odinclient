@@ -459,10 +459,10 @@ div.validationErrors {
 
 @keyframes slide-out {
   from {
-    transform: translateX(-100%);
+    transform: translateX(0);
   }
   to {
-    transform: translateX(0);
+    transform: translateX(100%);
   }
 }
 
@@ -472,6 +472,14 @@ div.slideIn {
   bottom: 5%;
   left: 5%;
   animation: slide-in 50ms;
+}
+
+div.slideIn button {
+  color: red;
+}
+
+div.slideIn.close {
+  animation: slide-out 50ms;
 }
 
 /* Inbox */
