@@ -1,6 +1,8 @@
 import React from "react";
 
-export default function MsgBox(type, message, close) {
+export default function MsgBox({type, message, close}) {
+
+
   return (
     <div className={`slideIn ${type}`}>
       <button type="button" className="close" onClick={close}>

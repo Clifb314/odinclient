@@ -266,11 +266,19 @@ div.components {
 }
 
 /* Feed/posts */
-div.post-icon {
+div.post-icon, div.default-icon {
   border-radius: 50%;
   overflow: hidden;
   width: 50px;
   height: 50px;
+}
+
+div.default-icon {
+  background-color: gray;
+  color: white;
+  font-weight: 700;
+  text-align: center;
+  font-size: 16px;
 }
 
 div.post-icon img {
@@ -476,6 +484,8 @@ div.slideIn {
 
 div.slideIn button {
   color: red;
+  border-radius: 50%;
+  border: black solid 1px
 }
 
 div.slideIn.close {
@@ -509,17 +519,31 @@ p.username {
   font-weight: 700;
 }
 
+p.title {
+  font-style: italic;
+  margin: 4px 0px
+}
+
+p.content {
+  margin: 4px 0px;
+}
+
 div.inboxList {
   padding: 6px;
   font-size: 14px;
 }
 
+div.inboxList:nth-child(n+1) {
+  margin-bottom: 6px;
+}
+
 div.inboxList.read {
-  color: blue
+  background-color: white;
 }
 
 div.inboxList.unread {
-  color: blueviolet;
+  background-color: rgb(164, 164, 252);
+  font-weight: 700;
 
 }
 
@@ -537,6 +561,10 @@ div.convoChain {
   overflow-y: auto;
   justify-content: space-evenly;
   flex-wrap: nowrap;
+}
+
+div.convoChain h1 {
+  text-align: center;
 }
 
 form#replyForm {
@@ -579,11 +607,10 @@ div.dropdown > p,
 div.convoList {
   margin: 5px 0;
   cursor: pointer;
-  background-color: white;
 }
 
 div.dropdown > p:hover,
-div.convoList:hover {
+div.inboxList:hover {
   background-color: rgb(177, 177, 177);
 }
 
@@ -617,6 +644,6 @@ button.newMsg {
 }
 
 input.friendSearch {
-  animation: grow 2s ease-in forwards;
+  animation: grow 500ms ease-in;
   width: 100%;
 }

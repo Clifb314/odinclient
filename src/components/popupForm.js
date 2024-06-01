@@ -6,6 +6,7 @@ import {
   editPost,
   editComment,
 } from "../utils/dataAccess";
+import { useNotis } from "../utils/useToast";
 
 export default function PopupForm({ options, toggleOpen, slideIn }) {
   //  options: type, post, comment
@@ -14,6 +15,7 @@ export default function PopupForm({ options, toggleOpen, slideIn }) {
   //  for edit it's the comment being edited
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const {newNoti} = useNotis()
 
   async function handleSubmit() {
     let post = {
@@ -28,9 +30,11 @@ export default function PopupForm({ options, toggleOpen, slideIn }) {
     const submitPost = options.type === "post" ? createPost : createComment;
     const submitOptions = options.type === "post" ? null : options.postRef._id
     const response = submitPost(post, submitOptions);
-    if (response.err) slideIn("error", response.err);
+    //if (response.err) slideIn("error", response.err);
+    if (response.err) newNoti("error", response.err);
     else {
-      slideIn("success", `${options.type} submitted!`);
+      //slideIn("success", `${options.type} submitted!`);
+      newNoti('success', `${options.type} submitted!`)
       toggleOpen();
     }
   }
@@ -50,9 +54,12 @@ export default function PopupForm({ options, toggleOpen, slideIn }) {
 
     const submitEdit = !options.commentRef ? editPost : editComment;
     const response = submitEdit(post, editID);
-    if (response.err) slideIn("error", response.err);
+    //if (response.err) slideIn("error", response.err);
+    if (response.err) newNoti("error", response.err);
+
     else {
-      slideIn("success", `${options.type} submitted!`);
+      //slideIn("success", `${options.type} submitted!`);
+      newNoti("success", `${options.type} submitted!`);
     }
   }
 

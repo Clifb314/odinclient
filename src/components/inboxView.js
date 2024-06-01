@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { readInbox, findOrCreate } from "../utils/dataAccess";
 import InboxReply from "./inboxReply";
 import InboxList from "./inboxList";
-import { checkUser } from "../utils/auth";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuthContext } from "../utils/useAuth";
 
@@ -14,14 +13,11 @@ export default function InboxView() {
     const [options, setOptions] = useState([])
     const [searchString, setSearchString] = useState('')
     const [dropDownView, setDropDownView] = useState(false)
-    //const [user, setUser] = useState(null)
     const {user} = useAuthContext()
     
     
     const [searchParams, setSearchParams] = useSearchParams()
     
-    //const query = useSearchParams()
-    //const friend = query ? query.friend : null
     
     
     
@@ -59,7 +55,7 @@ export default function InboxView() {
             msg.from = user
             setOpenMsg(msg)
         }
-        else return setOpenMsg(msg)
+        else setOpenMsg(msg)
     }
 
     function filterOptions(e) {
@@ -82,8 +78,8 @@ export default function InboxView() {
 
     async function startChain() {
         //showTo ? setShowTo(false) : setShowTo(true)
-        if (showTo) {
-            setShowTo(false)
+        if (!showTo) {
+            setShowTo(true)
             setSearchString('')
             let shortList = []
             for (let i = 0; i < 5 && i < friendsList.length; i++) {
@@ -92,7 +88,8 @@ export default function InboxView() {
             console.log(shortList)
             setOptions(shortList)
         } else {
-            setShowTo(true)
+            setShowTo(false)
+            setSearchString('')
         }
     }
 
@@ -139,7 +136,10 @@ export default function InboxView() {
                   value={searchString}
                   onChange={filterOptions}
                   onFocus={() => setDropDownView(true)}/>
-                <button display={dropDownView ? 'none' : 'block'} onClick={() => setDropDownView(false)}>X</button>
+                {dropDownView
+                    ? <button onClick={() => setDropDownView(false)}>X</button>
+                    : null
+                }
                 {dropDown}
                 <InboxList handleClickedMsg={handleClickedMsg} />
                 </div>

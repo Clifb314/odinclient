@@ -4,6 +4,7 @@ import PostCard from "./postCard";
 import MsgBox from "./slideInMsg";
 import PopupForm from "./popupForm";
 import { useParams } from "react-router-dom";
+import { useNotis } from "../utils/useToast";
 
 export default function Feed() {
 
@@ -18,13 +19,18 @@ export default function Feed() {
   const [posts, setPosts] = useState([]);
   const [slideIn, setSlideIn] = useState(null);
   const sorting = useParams().sorting;
+  const {newNoti} = useNotis()
 
 
     async function getPosts() {
       const query = sorting ? sorting : 'top'
       const response = await postList(query);
-      if (response.err) displaySlideIn('error', response.err)
-      else setPosts(response)
+      //if (response.err) displaySlideIn('error', response.err)
+      if (response.err) newNoti('error', response.err)
+      else {
+        setPosts(response)
+        newNoti('success', 'Feed updated')
+      }
     }
   
   
@@ -37,22 +43,22 @@ export default function Feed() {
     
   /* Alerts */
 
-  function closeSlideIn() {
-    setSlideIn(null);
-  }
+  // function closeSlideIn() {
+  //   setSlideIn(null);
+  // }
 
-  function displaySlideIn(type, message) {
-    setSlideIn({ type, message });
-    setTimeout(closeSlideIn, 5 * 1000);
-  }
+  // function displaySlideIn(type, message) {
+  //   setSlideIn({ type, message });
+  //   setTimeout(closeSlideIn, 5 * 60 * 1000);
+  // }
 
-  const slideInComponent = slideIn ? (
-    <MsgBox
-      type={slideIn.type}
-      message={slideIn.message}
-      close={closeSlideIn}
-    />
-  ) : null;
+  // const slideInComponent = slideIn ? (
+  //   <MsgBox
+  //     type={slideIn.type}
+  //     message={slideIn.message}
+  //     close={closeSlideIn}
+  //   />
+  // ) : null;
 
 
 
@@ -79,7 +85,6 @@ export default function Feed() {
       <PopupForm
         options={PopUpOpts}
         toggleOpen={togglePopUp}
-        slideIn={displaySlideIn}
       />
     </div>
   ) : (
@@ -98,7 +103,6 @@ export default function Feed() {
               <PostCard
                 post={post}
                 populateReply={populatePopUp}
-                slideIn={displaySlideIn}
               />
             </div>
           );
@@ -110,7 +114,7 @@ export default function Feed() {
   return (
     <div className="feed">
       {display}
-      {slideInComponent}
+      {/*slideInComponent*/}
       {floatBtn}
     </div>
   );

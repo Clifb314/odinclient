@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from "react";
 import {v4 as uuidv4} from 'uuid'
 import { sendInbox, inboxDetail } from "../utils/dataAccess";
+import { useAuthContext } from "../utils/useAuth";
 
 
 
-export default function InboxReply({openMsg, user}) {
+export default function InboxReply({openMsg}) {
     const [reply, setReply] = useState('')
     const [chain, setChain] = useState([])
     const [title, setTitle] = useState('')
+    const [checkNew, setCheckNew] = useState(false)
+
+    const {user} = useAuthContext()
 
     async function getChain() {
         if (!openMsg) return
 
         else if (openMsg.new) {
             const newMsg = {
+                _id: 1,
                 to: openMsg.to, //expecting an obj w/ username and _id
                 from: user._id,
                 content: 'Type your first message below!',
@@ -39,7 +44,7 @@ export default function InboxReply({openMsg, user}) {
     chain.map(msg => {
         const side = msg.to === user._id ? 'left' : 'right'
         return (
-            <div key={uuidv4()} className={`inboxItem ${side}`}>
+            <div key={msg._id} className={`inboxItem ${side}`}>
                 {/* icon */}
                 <p>{msg.from.username}</p>
                 <p>{msg.to.username}</p>
@@ -60,7 +65,7 @@ export default function InboxReply({openMsg, user}) {
     async function handleSubmit(e) {
         e.preventDefault()
         const message = {
-            to: openMsg.from._id,
+            to: openMsg.to,
             from: user._id, //get user_id from somewhere
             content: reply,
             date: new Date(),
@@ -82,6 +87,7 @@ export default function InboxReply({openMsg, user}) {
         <div className="inboxReply">
             {/* message chain here */}
             <div className="convoChain">
+                {/*<h1>{openMsg?.to.username === user.username ? openMsg.from.username : openMsg.to.username}</h1>*/}
                 {displayTitle}
                 {displayChain}
             </div>

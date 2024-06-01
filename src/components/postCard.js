@@ -10,6 +10,7 @@ import CommentCard from "./commentCard";
 import { Link } from "react-router-dom";
 import { useAuthContext } from "../utils/useAuth";
 import Icons from "../utils/svgHelper";
+import { useNotis } from "../utils/useToast";
 
 export default function PostCard({ post, populateReply, slideIn }) {
   const [displayCom, setDisplayCom] = useState(false);
@@ -18,22 +19,26 @@ export default function PostCard({ post, populateReply, slideIn }) {
   const [clickedLike, setClickedLike] = useState(null)
   const [likedComments, setLikedComments] = useState([])
   const { user } = useAuthContext();
+  const {newNoti} = useNotis()
+
+  
   async function displayIcon(id) {
     const imgBlob = await getUserIcon(id);
     //error handling?
-    if (imgBlob.err || imgBlob.message) return null;
-    else return setImgSrc(URL.createObjectURL(imgBlob));
+    if (imgBlob.err || imgBlob.message) {
+      newNoti('error', 'Failed to load user icon')
+      return 
+    } else return setImgSrc(URL.createObjectURL(imgBlob));
   }
 
   async function getCommentsDetails(postid) {
     const response = await commentList(postid);
-    if (response.err) slideIn("error", response.err);
+    if (response.err) newNoti("error", response.err);
     else setCommentDetails(response);
   }
 
   useEffect(() => {
     if (post.author.icon) {
-      console.log(post);
       displayIcon(post.author._id);
     }
 
@@ -52,23 +57,22 @@ export default function PostCard({ post, populateReply, slideIn }) {
   async function handleVote(direction) {
     const response = await likePost(post._id, direction);
     if (response.err) {
-      slideIn("error", response.err);
+      newNoti("error", response.err);
     } else {
       const msg = direction === "up" ? "Nice!" : "Ick!";
       const setFill = direction === "up" ? true : false
       setClickedLike(setFill)
-      slideIn("success", msg);
+      newNoti("success", msg);
     }
   }
 
   async function handleCommentVote(id, direction) {
     const response = await likeComment(id, direction);
-    if (response.err) slideIn("error", response.err);
+    if (response.err) newNoti("error", response.err);
     else {
       const msg = direction === "up" ? "Nice!" : "Ick!";
       if (direction === 'up') {
         //update comments from state
-        console.log(commentDetails)
         setCommentDetails(
           commentDetails.map(comment => {
 
@@ -83,9 +87,7 @@ export default function PostCard({ post, populateReply, slideIn }) {
             }
           }) 
         )
-        console.log(commentDetails)
       } else {
-        console.log(commentDetails)
         setCommentDetails(
           commentDetails.map(comment => {
             if (comment._id === id) {
@@ -97,16 +99,15 @@ export default function PostCard({ post, populateReply, slideIn }) {
             } else return comment
           })
         )
-        console.log(commentDetails)
       }
-      slideIn("success", msg);
+      newNoti("success", msg);
     }
   }
 
   async function handleDelete(id) {
     const response = await delPost(id);
-    if (response.err) slideIn("error", response.err);
-    else slideIn("success", "Post deleted");
+    if (response.err) newNoti("error", response.err);
+    else newNoti("success", "Post deleted");
   }
 
   function getReplyToComment(id) {
@@ -120,7 +121,6 @@ export default function PostCard({ post, populateReply, slideIn }) {
   function handleScroll(id) {
     //scroll to comment on click
     const listNode = replyRef.current;
-    console.log(listNode)
     const replyArr = [...listNode
       .querySelectorAll("li")]
       .filter((node) => node.id === id);
