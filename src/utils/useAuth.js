@@ -43,17 +43,20 @@ export function useAuth() {
 export function AuthProvider({children, user, setUser}) {
     const authValue = useAuth()
 
+
+
     function updateUser(details) {
         setUser(details)
+        console.log(details)
         console.log(user)
-        setTimeout(logoutUser, 30 * 60 * 1000)
     }
+
+
 
     function logoutUser() {
         logout()
         setUser({_id: null})
         console.log('logged out from app')
-        console.log(user)
     }
 
     return (

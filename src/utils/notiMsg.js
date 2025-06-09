@@ -1,14 +1,17 @@
-import React from "react";
-import { useNotis } from "./useToast";
+import React, { useState, useEffect } from "react";
 
 
-export default function NotiMsg({type, message, onClick}) {
+export default function NotiMsg({type, message, status, onClick}) {
 
+    const [isActive, setIsActive] = useState(false)
 
+    useEffect(() => {
+      status ? setIsActive(true) : setIsActive(false)
+    }, [status])
 
     return (
-        <div className={`noti ${type}`}>
-            <button onClick={onClick}>X</button>
+        <div className={`noti ${type} ${isActive ? 'active' : 'inactive'}`}>
+            <span onClick={onClick}>X</span>
             <p>{message}</p>
         </div>
     )

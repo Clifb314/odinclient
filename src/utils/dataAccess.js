@@ -1,10 +1,10 @@
 import { authHeader, authJson } from "./authHeader";
-
-const USERURL = "http://localhost:5000/api/auth/";
-const POSTURL = "http://localhost:5000/api/posts/";
-const INBOXURL = "http://localhost:5000/api/inbox/";
-const GUESTURL = "http://localhost:5000/api/";
-const COMURL = "http://localhost:5000/api/comments/";
+const BASEURL = "http://localhost:3000"
+const USERURL = BASEURL + "/api/auth/";
+const POSTURL = BASEURL + "/api/posts/";
+const INBOXURL = BASEURL + "/api/inbox/";
+const GUESTURL = BASEURL + "/api/";
+const COMURL = BASEURL + "/api/comments/";
 
 /*     -----user functions-----     */
 export async function getUserList() {
@@ -151,6 +151,8 @@ export async function googleAuth() {
       headers: authHeader(),
     })
     const data = response.json()
+    console.log('google data:')
+    console.log(data)
     if (!response.ok) return {message: data.message, err: data.err}
     else return data
 
@@ -484,7 +486,7 @@ export async function findOrCreate(friendid) {
       headers: authHeader()
     })
     const data = await response.json()
-    console.log(response)
+    console.log(data)
     if (!response.ok) return {err: data.message}
     else return data
   } catch(err) {
@@ -518,7 +520,8 @@ export async function deleteInbox(id) {
       headers: authHeader(),
     });
     const data = await response.json();
-    return {err: data.message};
+    if (!response.ok) return {err: data.message};
+    else return {message: data.message}
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };
@@ -533,7 +536,8 @@ export async function readInbox(id) {
       headers: authHeader(),
     });
     const data = await response.json();
-    return {err: data.message};
+    if (!response.ok) return {err: data.message}
+    return {messsage: data.message};
   } catch (err) {
     console.error("Error", err);
     return { err: "Could not access database" };

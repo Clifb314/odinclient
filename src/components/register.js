@@ -1,12 +1,19 @@
 import React, { useState } from "react";
 import { register } from "../utils/auth";
 import { editIcon, googleAuth } from "../utils/dataAccess";
-import MsgBox from "./slideInMsg";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../utils/useAuth";
+import { useNotis } from "../utils/useToast";
 
 export default function Register() {
-  const { user, updateUser } = useAuthContext();
+  const { updateUser } = useAuthContext();
+  const {newNoti} = useNotis()
+
+  const iconTemplate = {
+    url: null,
+    size: null,
+    file: null
+  }
 
   const template = {
     username: "",
@@ -20,30 +27,10 @@ export default function Register() {
   };
   const [valErrs, setValErrs] = useState([]);
   const [userInfo, setUserInfo] = useState(template);
-  const [displayMsg, setDisplayMsg] = useState(null);
-  const [iconPreview, setIconPreview] = useState(null)
+  const [iconPreview, setIconPreview] = useState(iconTemplate)
   const navigate = useNavigate();
 
 
-
-  /* Alerts */
-
-  function closeSlideIn() {
-    setDisplayMsg(null);
-  }
-
-  function openSlideIn(type, msg) {
-    setDisplayMsg({ type, msg });
-    setTimeout(closeSlideIn, 5 * 1000);
-  }
-
-  const alerts = displayMsg ? (
-    <MsgBox
-      type={displayMsg.type}
-      message={displayMsg.msg}
-      close={closeSlideIn}
-    />
-  ) : null;
 
   /* Errors, validation */
 
@@ -69,18 +56,23 @@ export default function Register() {
   }
 
   function handleIcon(e) {
+    //const {files} = e.target
     const imgFile = e.target.files[0]
-    setUserInfo({...userInfo, icon: imgFile})
-    setIconPreview(URL.createObjectURL(imgFile))
+    //setUserInfo({...userInfo, icon: imgFile})
+    setIconPreview({
+      url: URL.createObjectURL(imgFile),
+      size: `${imgFile.size / 1000} bytes`,
+      file: imgFile
+    })
   }
 
   async function getGoogleInfo(e) {
     const googleInfo = await googleAuth();
     //pretty sure this needs to redirect to google some other way
-    if (googleInfo.err) openSlideIn("error", googleInfo.err); //error handling
+    if (googleInfo.err) newNoti("error", googleInfo.err); //error handling
     else {
       setUserInfo({ ...userInfo, googleAcct: googleInfo });
-      openSlideIn("success", "Google account linked!");
+      newNoti("success", "Google account linked!");
     }
   }
 
@@ -91,28 +83,30 @@ export default function Register() {
     console.log(signup);
     if (signup.err) {
       //server error
-      openSlideIn("error", signup.err);
+      newNoti("error", signup.err);
       return;
     }
-    if (!signup.user || signup.errors) {
+    else if (!signup.user || signup.errors) {
       //validation errors
       setValErrs(signup.errors);
-      return;
+      return newNoti('error', 'Validation errors. Please review and resubmit');
     }
-    if (signup.user.icon) {
+    else if (iconPreview.file) {
       //create icon from same method to update icon
       const iconForm = new FormData();
-      iconForm.append("icon", userInfo.icon);
+      iconForm.append("icon", iconPreview.file);
       const response = await editIcon(iconForm);
-      if (response.err) openSlideIn("error", response.err); //error handling
-    } else {
+      if (response.err) newNoti("error", response.err); //error handling
+    } 
+    
       updateUser(signup.user);
-    }
+      navi("/feed/recent");
+      newNoti("success", `Welcome to CliffBook, ${signup.user.username}!`);
     //set user higher up?
   }
 
 
-  /* Constants, conditionals */
+  /* regex errors */
 
 
 
@@ -124,8 +118,6 @@ export default function Register() {
         <p>Register and join in on the discussion!</p>
       </div>
       <form className="registerForm" onSubmit={handleSubmit}>
-        <label htmlFor="icon">Upload your user icon</label>
-        <input name="icon" id="icon" type="file" accept="image/*" />
         <label htmlFor="username">Username: </label>
         <input
           name="username"
@@ -180,8 +172,8 @@ export default function Register() {
         />
         <label htmlFor="icon">Upload Icon:</label>
         <input type="file" name="icon" id="icon" accept="image/*" onChange={handleIcon} />
-        {iconPreview 
-        ? <div className="icon"><img src={iconPreview} alt="Preview of your uploaded icon" /></div>
+        {iconPreview.url 
+        ? <div className="icon"><img src={iconPreview.url} alt="Preview of your uploaded icon" /></div>
         : null
          }
         <button className="submitBtn" type="submit">
@@ -192,7 +184,6 @@ export default function Register() {
         </button>
       </form>
       {displayErrs}
-      {alerts}
     </div>
   );
 }

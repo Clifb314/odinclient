@@ -7,8 +7,10 @@ import {
   editComment,
 } from "../utils/dataAccess";
 import { useNotis } from "../utils/useToast";
+import { Link } from "react-router-dom";
+import { useAuth, useAuthContext } from "../utils/useAuth";
 
-export default function PopupForm({ options, toggleOpen, slideIn }) {
+export default function PopupForm({ options, toggleOpen }) {
   //  options: type, post, comment
   //  type = reply, comment, post, edit
   //  for reply, commentRef is the comment replying to,
@@ -16,6 +18,7 @@ export default function PopupForm({ options, toggleOpen, slideIn }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const {newNoti} = useNotis()
+  const {user} = useAuthContext()
 
   async function handleSubmit() {
     let post = {
@@ -77,7 +80,16 @@ export default function PopupForm({ options, toggleOpen, slideIn }) {
       setContent("");
       setTitle("");
     };
-  }, []);
+  }, [options]);
+
+  const preview = options.commentRef ? 
+    <div className="postCard">     
+      <Link to={`/users/${options.commentRef.author._id}`}>
+        {options.commentRef.author.username}
+      </Link>
+      <p>{options.commentRef.content}</p>
+    </div>
+  : null
 
 
   const buttons = options.type === 'edit' ?
@@ -106,6 +118,7 @@ export default function PopupForm({ options, toggleOpen, slideIn }) {
   return (
     <div className="form-container">
       <form id="popup-form">
+        {preview}
         <div hidden={options.commentRef}>
           <label htmlFor="title">Title: </label>
           <input
@@ -122,8 +135,9 @@ export default function PopupForm({ options, toggleOpen, slideIn }) {
           id="content"
           name="content"
           onChange={(e) => setContent(e.target.value)}
+          maxLength={200}
         />
-        {buttons}
+        {user._id ? buttons : <p className="loginMsg">Must be logged in to post</p>}
       </form>
     </div>
   );

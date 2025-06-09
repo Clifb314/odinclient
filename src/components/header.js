@@ -6,11 +6,16 @@ import { useAuthContext } from "../utils/useAuth";
 import Icons from "../utils/svgHelper";
 
 export default function Header() {
-    //const loggedIn = useContext()
-    //const {auth} = useAuth()
     const {user, updateUser, logoutUser} = useAuthContext()
 
     const [showReqs, setShowReqs] = useState(false)
+
+    //count unread messages
+    function newMsgCount(inbox) {
+        if (!inbox?.length) return null
+        const unseenMsgs = inbox.filter(msg => msg.seen === false)
+        return unseenMsgs.length
+    }
 
     function handleToggle() {
         showReqs ? setShowReqs(false) : setShowReqs(true)
@@ -80,11 +85,17 @@ export default function Header() {
                     </div>
                 {user._id ?
                     <ul className="authLinks">
-                        <li><Link to='/inbox'>Inbox</Link></li>
+                        <li>
+                            <Link to='/inbox'>Inbox</Link>
+                            {user.inbox?.length > 0 && newMsgCount() ? <div className="counter">{newMsgCount()}</div> : null }
+                        </li>
                         <li><Link to='/account'>
                             <Icons iconName={'acc_settings'} />
                             </Link></li>
-                        <li onClick={handleToggle}>Friend Requests</li>
+                        <li onClick={handleToggle}>
+                            Friend Requests
+                            {user.pending?.length > 0 && <div className="counter">{user.pending.length}</div>}
+                        </li>
                         {requests}
                         <li><Link onClick={logoutUser} to='/'>Log Out</Link></li>
                     </ul>

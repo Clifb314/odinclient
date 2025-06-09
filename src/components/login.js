@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { login } from "../utils/auth";
 import { useNavigate } from "react-router-dom";
-import { useAuth, useAuthContext } from "../utils/useAuth";
+import { useAuthContext } from "../utils/useAuth";
+import { useNotis } from "../utils/useToast";
 
 export default function Login() {
   const template = {
@@ -12,6 +13,7 @@ export default function Login() {
   const [errorMsg, setErrorMsg] = useState(null)
 
   const navi = useNavigate()
+  const {newNoti} = useNotis()
   //const {saveLogin, auth} = useAuth()
   const {updateUser} = useAuthContext()
 
@@ -29,16 +31,14 @@ export default function Login() {
       username: creds.username,
       password: creds.password,
     });
-    if (!fetchUser.user || fetchUser.err)
-      setErrorMsg(fetchUser); //error handling
-    else {
-      updateUser(fetchUser.user)
-      //saveLogin(fetchUser.user)
-      //context.setUser(fetchUser.user)
-      //console.log(user)
-      //console.log(auth)
-      navi('/feed/recent'); //set user higher up
-    }
+    if (!fetchUser.user || fetchUser.err) {
+      newNoti('error', 'Login failed')
+      setErrorMsg(fetchUser.message); //error handling
+    } else {
+        updateUser(fetchUser.user)
+        newNoti('success', `Welcome back ${fetchUser.user.username}`)
+        navi('/feed/recent'); //set user higher up
+      }
   }
 
   return (
@@ -49,6 +49,7 @@ export default function Login() {
         id="username"
         value={creds.username}
         onChange={handleChange}
+        autoComplete="username"
       />
       <label htmlFor="password">Password: </label>
       <input
@@ -57,7 +58,7 @@ export default function Login() {
         id="password"
         value={creds.password}
         onChange={handleChange}
-        autoComplete="new-password"
+        autoComplete="password"
       />
       <button className="submit" type="submit" form="loginForm">Sign In</button>
       <p className="errorMsg">{errorMsg ? errorMsg : ''}</p>

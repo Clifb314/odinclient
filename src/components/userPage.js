@@ -6,6 +6,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { checkUser } from "../utils/auth";
 import { useAuthContext } from "../utils/useAuth";
 import Icons from "../utils/svgHelper";
+import { useNotis } from "../utils/useToast";
 
 //need to get id from params
 export default function UserPage() {
@@ -19,6 +20,7 @@ export default function UserPage() {
     const navigate = useNavigate()
     const searchParam = new URLSearchParams({friend: id})
     const {user} = useAuthContext()
+    const {newNoti} = useNotis()
 
     async function getUser() {
         const response = await getUserDetail(id)
@@ -51,14 +53,14 @@ export default function UserPage() {
 
     async function handleFriend() {
         const response = await addFriend(id)
-        if (response.err) return response.err //error handling
-        else return response
+        if (response.err) return newNoti('error', response.err) //error handling
+        else return newNoti('success', response.message)
     }
 
     async function handleDelFriend() {
         const response = await delFriend(id)
-        if (response.err) return response.err //error handling
-        else return response 
+        if (response.err) return newNoti('error', response.err) //error handling
+        else return newNoti('success', response.message)
     }
 
 
@@ -103,9 +105,9 @@ export default function UserPage() {
             <p>Email: {userDetails.userDetails.email}</p>
 
             <div>
-                <button type="button" onClick={friended ? handleDelFriend : handleFriend}>
+                <span onClick={friended ? handleDelFriend : handleFriend}>
                     <Icons iconName={friended ? 'person_del' : 'person_add'} />
-                </button>
+                </span>
                 <Link to={friended ? `/inbox?${redirect}` : '/inbox'}>
                     <Icons iconName={'mail'} />
                 </Link>

@@ -12,6 +12,8 @@ import {ReactComponent as HeartFilledIcon} from '../MaterialIcons/heart-filled.s
 import {ReactComponent as CommentIcon} from '../MaterialIcons/comment.svg'
 import {ReactComponent as DeleteIcon} from '../MaterialIcons/delete.svg'
 import {ReactComponent as EditIcon} from '../MaterialIcons/edit.svg'
+import {ReactComponent as OpenNewIcon} from '../MaterialIcons/openNew.svg'
+import {ReactComponent as ClearAllIcon} from '../MaterialIcons/clearAll.svg'
 
 
 export default function Icons({iconName}) {
@@ -74,6 +76,14 @@ export default function Icons({iconName}) {
             name: 'edit',
             icon: <EditIcon />
         },
+        {
+            name: 'openNew',
+            icon: <OpenNewIcon />
+        },
+        {
+            name: 'clearAll',
+            icon: <ClearAllIcon />
+        }
     ]
 
     const displayIcon = iconName ? 

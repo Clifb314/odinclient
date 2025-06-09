@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { postList, getUserIcon } from "../utils/dataAccess";
 import PostCard from "./postCard";
-import MsgBox from "./slideInMsg";
 import PopupForm from "./popupForm";
 import { useParams } from "react-router-dom";
 import { useNotis } from "../utils/useToast";
+import Icons from "../utils/svgHelper";
 
 export default function Feed() {
 
@@ -15,9 +15,8 @@ export default function Feed() {
     commentRef: null, //if replying to a comment or editing a comment
   };
   const [PopUpOpts, setPopupOpts] = useState(replyTemplate);
-  const [openPopUp, setOpenPopUp] = useState(false);
+  const [openPopUp, setOpenPopUp] = useState(null);
   const [posts, setPosts] = useState([]);
-  const [slideIn, setSlideIn] = useState(null);
   const sorting = useParams().sorting;
   const {newNoti} = useNotis()
 
@@ -25,7 +24,6 @@ export default function Feed() {
     async function getPosts() {
       const query = sorting ? sorting : 'top'
       const response = await postList(query);
-      //if (response.err) displaySlideIn('error', response.err)
       if (response.err) newNoti('error', response.err)
       else {
         setPosts(response)
@@ -38,27 +36,9 @@ export default function Feed() {
       getPosts();
   
       return () => setPosts([]);
-    }, []);
+    }, [sorting]);
 
     
-  /* Alerts */
-
-  // function closeSlideIn() {
-  //   setSlideIn(null);
-  // }
-
-  // function displaySlideIn(type, message) {
-  //   setSlideIn({ type, message });
-  //   setTimeout(closeSlideIn, 5 * 60 * 1000);
-  // }
-
-  // const slideInComponent = slideIn ? (
-  //   <MsgBox
-  //     type={slideIn.type}
-  //     message={slideIn.message}
-  //     close={closeSlideIn}
-  //   />
-  // ) : null;
 
 
 
@@ -72,15 +52,15 @@ export default function Feed() {
     }
   }
 
-  function populatePopUp(type, postRef, commentRef) {
-    setPopupOpts({ type, postRef, commentRef });
+  function populatePopUp(type, postRef, commentRef, commentPreview) {
+    setPopupOpts({ type, postRef, commentRef, commentPreview });
     togglePopUp(true);
   }
 
   const floatBtn = openPopUp ? (
     <div className="popup open">
       <div className="closeBtn" onClick={togglePopUp}>
-        X
+        <Icons iconName={'close'} />
       </div>
       <PopupForm
         options={PopUpOpts}
@@ -88,8 +68,8 @@ export default function Feed() {
       />
     </div>
   ) : (
-    <div className="popup closed" onClick={togglePopUp}>
-      !
+    <div className={openPopUp === null ? 'popup initial' : 'popup closed'} onClick={togglePopUp}>
+      <Icons iconName={'openNew'} />
     </div>
   );
 
@@ -114,7 +94,6 @@ export default function Feed() {
   return (
     <div className="feed">
       {display}
-      {/*slideInComponent*/}
       {floatBtn}
     </div>
   );

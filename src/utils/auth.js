@@ -1,5 +1,5 @@
 import {authHeader, authJson} from './authHeader'
-const url = "http://localhost:5000/api/"
+const url = "http://localhost:3000/api/"
 
 
  export async function login(body) {
@@ -15,17 +15,18 @@ const url = "http://localhost:5000/api/"
         if (!response.ok) {
             return data.message
         } else {
+            const start = Date.now()
+            console.log(start)
+            const end = start + (1000 * 60 * 30)
+            data.user.tokenExp = end
             localStorage.setItem('user', JSON.stringify(data.user))
             localStorage.setItem('token', JSON.stringify(data.token))
             setTimeout(() => {
                 console.log('Log out in 5mins')
-            }, 1000 * 60 * 55)
-            setTimeout(logout, (60 * 60 * 1000))
-            const start = Date.now()
-            console.log(start)
-            const end = start + (1000 * 60 * 60)
-            console.log(end)
+            }, 1000 * 60 * 25)
+            setTimeout(logout, (30 * 60 * 1000))
             console.log(`Will log out at ${new Date(end).toLocaleTimeString()}`)
+            console.log(`Token will expire at ${data.user.tokenExp - Date.now()}`)
 
             return {message: 'Logged in', user: data.user}
         }
@@ -41,7 +42,7 @@ export function logout() {
 
 }
 
-//validation returns JSON w/ .message and .errors:[array of errors] on failure
+//validation returns JSON w/ .message and errors[array of errors] on failure
 //errors[0] is an obj w/ msg, value, type (ie field), path (ie username), location (body)
 export async function register(body) {
     try {
@@ -57,7 +58,7 @@ export async function register(body) {
             return data
         } else {
             localStorage.setItem('user', JSON.stringify(data))
-            setTimeout(logout, 60 * 60 * 1000)
+            setTimeout(logout, 30 * 60 * 1000)
             return {message: 'Logged in', user: data.user}  
         }
     } catch(err) {
@@ -68,5 +69,6 @@ export async function register(body) {
 
 export function checkUser() {
     const user = localStorage.getItem('user')
+    //const output = JSON.parse(user)
     return user ? JSON.parse(user) : {_id: null}
 }

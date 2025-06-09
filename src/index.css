@@ -1,17 +1,76 @@
 :root {
   --boxShadow: 4px 2px 11px 0px rgba(0, 0, 0, 0.83);
-  --cardColor: rgb(170, 176, 184);
+  --cardColor: rgb(172, 203, 243);
   --logoFontColor: rgb(80, 16, 255);
+  --roundedCorner: 8px;
+  --notiAnimation: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Small screens */
+@media only screen and (max-width: 800px) {
+  div.header li {
+    font-size: 12px;
+  }
+
+  div.logo {
+    font-size: 18px;
+  }
+
+  .material-icons {
+    font-size: 12px;
+  }
+
+  div.accountPage {
+    flex-direction: column;
+  }
+
+  .feed.acct {
+    flex: 1;
+  }
+
+  div.icon {
+    height: 100px;
+    width: 100px;
+  }
+
+  div.userDetails h1 {
+    font-size: 18px;
+  }
+
+  div.userDetails h2 {
+    font-size: 16px;
+  }
+}
+
+@media only screen and (min-width: 801px) {
+  div.header li {
+    font-size: 24px;
+  }
+
+  div.logo {
+    font-size: 24px;
+  }
+
+  .material-icons {
+    font-size: 24px;
+  }
+
+  .feed.acct {
+    flex: 3;
+  }
+
+  div.icon {
+    height: 200px;
+    width: 200px;
+  }
 }
 
 /* Material Icons */
 
 .material-icons {
-  font-family: 'Material Icons';
+  font-family: "Material Icons";
   font-weight: normal;
   font-style: normal;
-  font-size: 24px;  /* Preferred icon size */
-  display: inline-block;
   line-height: 1;
   text-transform: none;
   letter-spacing: normal;
@@ -29,9 +88,8 @@
   -moz-osx-font-smoothing: grayscale;
 
   /* Support for IE. */
-  font-feature-settings: 'liga';
+  font-feature-settings: "liga";
 }
-
 
 * {
   box-sizing: border-box;
@@ -51,6 +109,14 @@ code {
     monospace;
 }
 
+button.transparent {
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  border: none;
+  background-color: transparent;
+}
+
 /* Main layout */
 div.app {
   height: 100vh;
@@ -59,17 +125,41 @@ div.app {
   background: rgb(202, 214, 218);
 }
 
-div.components, div.register {
+div.components,
+div.register {
   display: flex;
   flex: 1 0 auto;
   justify-content: center;
   align-items: center;
 }
 
+div.logoutWarning {
+  position: absolute;
+  background-color: white;
+  border-radius: var(--roundedCorner);
+  padding: 28px 22px;
+  top: 50%;
+  left: 50%;
+  z-index: 100;
+}
+
+div.logoutWarning > div {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+div.logoutWarning button {
+  display: inline;
+  width: 8rem;
+  padding: 4px;
+}
+
 /* Forms */
 form {
   margin: 12px;
-  border-radius: 5px;
+  border-radius: var(--roundedCorner);
   height: 25%;
   width: 25%;
   box-shadow: var(--boxShadow);
@@ -92,12 +182,29 @@ label {
 
 input {
   width: min(80%, 300px);
-  border-radius: 6px;
+  height: max(12px, 2em);
+  border-radius: var(--roundedCorner);
   padding: 8px;
+  margin-bottom: 6px;
   border: 1px solid rgb(207, 207, 255);
 }
 
 /* Header */
+div.counter {
+  border-radius: 50%;
+  height: 2em;
+  width: 2em;
+  font-size: 10px;
+  color: white;
+  background-color: red;
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 div.header {
   width: 100%;
   height: 10vh;
@@ -109,8 +216,30 @@ div.header {
 }
 
 div.logo {
-  font-size: 24px;
-  color: var(--logoFontColor);
+  /*color: var(--logoFontColor); */
+  background: linear-gradient(320deg, rgb(223, 122, 223), blue);
+  background-clip: text;
+  color: transparent;
+  /*animation: logoFlicker 5s ease infinite;*/
+}
+
+/* linear-gradient is not really compatible with keyframes */
+@keyframes logoFlicker {
+  0% {
+    background: linear-gradient(140deg, purple, blue);
+    background-clip: text;
+    color: transparent;
+  }
+  50% {
+    background: linear-gradient(320deg, rgb(223, 122, 223), blue);
+    background-clip: text;
+    color: transparent;
+  }
+  100% {
+    background: linear-gradient(140deg, rgb(119, 2, 119), rgb(124, 124, 236));
+    background-clip: text;
+    color: transparent;
+  }
 }
 
 div.header h1 {
@@ -126,10 +255,10 @@ div.header a {
 
 div.header li {
   list-style-type: none;
-  font-size: 24px;
   display: inline-block;
   transition: all ease-in-out 150ms;
   padding: 10px;
+  position: relative;
 }
 
 div.header li + li {
@@ -140,6 +269,14 @@ div.header li:hover {
   background-color: rgb(108, 108, 245);
   color: white;
   border: 1px solid white;
+}
+
+div.header li:hover a {
+  color: white;
+}
+
+div.header li:hover svg {
+  fill: white;
 }
 
 div.header ul {
@@ -194,6 +331,10 @@ div.registerText p {
   font-size: 18px;
 }
 
+form.registerForm {
+  width: min(50%, 500px);
+}
+
 /* buttons */
 button {
   border-radius: 10px;
@@ -225,6 +366,14 @@ div.commentsSection svg {
   width: 18px;
 }
 
+span.refreshBtn svg {
+  fill: rgb(13, 128, 13);
+  position: absolute;
+  right: 5%;
+  top: 5%;
+  z-index: 10;
+}
+
 div.Btn-container {
   display: flex;
   justify-content: space-evenly;
@@ -233,6 +382,17 @@ div.Btn-container {
 button.submitBtn {
   color: white;
   background-color: rgb(31, 156, 31);
+}
+
+form#popup-form button,
+form#popup-form p {
+  position: absolute;
+  bottom: 5%;
+  right: 5%;
+}
+
+form#popup-form > p {
+  font-style: italic;
 }
 
 div.closeBtn {
@@ -250,9 +410,8 @@ div.closeBtn {
   cursor: pointer;
 }
 
-div.closeBtn:hover {
-  color: red;
-  border: 1px solid red;
+div.closeBtn:hover svg {
+  fill: red;
 }
 
 div.interactBtn {
@@ -266,27 +425,35 @@ div.components {
 }
 
 /* Feed/posts */
-div.post-icon, div.default-icon {
+div.post-icon,
+div.default-icon {
   border-radius: 50%;
   overflow: hidden;
   width: 50px;
   height: 50px;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 div.default-icon {
   background-color: gray;
   color: white;
   font-weight: 700;
-  text-align: center;
-  font-size: 16px;
+  font-size: 24px;
 }
 
 div.post-icon img {
   object-fit: cover;
   height: auto;
-  width: 150px
+  width: 100px;
+  margin: 0 auto;
+  display: block;
 }
-
 
 div.feed {
   height: 100%;
@@ -303,7 +470,6 @@ div.postCard {
   text-align: left;
   box-shadow: var(--boxShadow);
   overflow: auto;
-  max-height: 50%;
   position: relative;
 }
 
@@ -311,14 +477,30 @@ div.postCard p {
   margin: 4px;
 }
 
+div.postCard p.login {
+  text-align: right;
+}
+
 div.postCard p.postTitle {
   font-weight: 700;
 }
 
-.showComments {
-  position: absolute;
-  top: 4px;
-  right: 4px;
+.toggleComments {
+  position: sticky;
+  bottom: 4px;
+  left: 4px;
+}
+
+span.showComments svg {
+  animation: spinDown 200ms linear;
+  transform-origin: center;
+  transform: rotate(0);
+}
+
+span.hideComments svg {
+  animation: spinBack 200ms linear;
+  transform-origin: center;
+  transform: rotate(-90deg);
 }
 
 /* floating button */
@@ -337,7 +519,11 @@ form#popup-form {
   height: 100%;
   margin: 0;
   padding: 10px;
+  align-items: center;
+}
 
+form#popup-form > div {
+  width: 80%;
 }
 
 form#popup-form > input {
@@ -346,10 +532,71 @@ form#popup-form > input {
 }
 
 form#popup-form > textarea {
-  margin: 4px 0;
+  margin: 0 0;
+  padding: 4px;
+  height: 4em;
+  width: 80%;
 }
 
-div.popup.closed {
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes popClose {
+  0% {
+    width: min(25%, 300px);
+    height: min(25%, 300px);
+    overflow: hidden;
+    font-size: 0;
+    content-visibility: hidden;
+    border-radius: 0%;
+    opacity: 0;
+  }
+
+  25% {
+    opacity: 0.5;
+  }
+
+  75% {
+    content-visibility: visible;
+  }
+}
+
+@keyframes popOpen {
+  0% {
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+    overflow: hidden;
+    font-size: 0;
+    content-visibility: hidden;
+    opacity: 0;
+  }
+
+  25% {
+    opacity: 0.5;
+  }
+
+  75% {
+    content-visibility: visible;
+  }
+}
+
+div.popup.closed *,
+div.popup.open * {
+  animation: fade-in 500ms ease-in;
+}
+
+div.popup.closed,
+div.popup.initial {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -358,13 +605,35 @@ div.popup.closed {
   border-radius: 50%;
   height: 50px;
   width: 50px;
-  background-color: slateblue;
+  background-color: var(--logoFontColor);
   color: white;
+  transition: all 500ms ease-in;
+  cursor: pointer;
+}
+
+div.popup.closed {
+  animation: popClose 500ms ease-in;
 }
 
 div.popup.open {
-  width: min(25%, 300px);
-  height: min(25%, 300px);
+  width: min(25%, 500px);
+  height: min(25%, 500px);
+  animation: popOpen 500ms ease-in;
+}
+
+div.popup.closed:hover svg,
+div.popup.initial:hover svg {
+  fill: var(--logoFontColor);
+}
+
+div.popup.closed:hover,
+div.popup.initial:hover {
+  background-color: white;
+}
+
+div.popup.closed svg,
+div.popup.initial svg {
+  fill: white;
 }
 
 /* comments */
@@ -372,6 +641,7 @@ div.popup.open {
 div.commentSection {
   max-height: 25rem;
   overflow: auto;
+
 }
 
 div.commentCard {
@@ -383,6 +653,7 @@ div.commentCard {
 div.commentsSection ul {
   list-style-type: none;
   padding-left: 20px;
+  transition: all 200ms linear;
 }
 
 div.replyPreview {
@@ -398,9 +669,9 @@ div.replyPreview {
 div.icon {
   border-radius: 50%;
   overflow: hidden;
-  height: 200px;
-  width: 200px;
-
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 div.icon img {
@@ -429,9 +700,9 @@ div.userDetails > form#accountForm {
   margin: 0;
 }
 
-div.feed.acct {
+.feed.acct {
+  padding: 6px;
   width: auto;
-  flex: 3;
 }
 
 div.friendsList ul {
@@ -459,6 +730,7 @@ div.validationErrors {
 @keyframes slide-in {
   from {
     transform: translateX(100%);
+    opacity: 0;
   }
   to {
     transform: translateX(0);
@@ -471,25 +743,81 @@ div.validationErrors {
   }
   to {
     transform: translateX(100%);
+    opacity: 0;
   }
 }
 
-div.slideIn {
-  z-index: 10;
+div.noti-list {
   position: fixed;
-  bottom: 5%;
-  left: 5%;
-  animation: slide-in 50ms;
+  text-align: left;
+  padding: 1em;
+  width: 100%;
+  max-width: 400px;
+  max-height: 50vh;
+  overflow: hidden auto;
+  bottom: 5px;
+  left: 5px;
+  z-index: 5;
 }
 
-div.slideIn button {
+div.btn-flex {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+div.btn-flex > button {
   color: red;
-  border-radius: 50%;
-  border: black solid 1px
 }
 
-div.slideIn.close {
-  animation: slide-out 50ms;
+div.noti {
+  opacity: 0.8;
+  padding: 2px 6px;
+  box-shadow: gray 0px 1px 3px 0px, rgb(165, 164, 164) 0px 1px 2px 0px;
+  position: relative;
+  padding-left: 1em;
+  border-radius: 8px;
+}
+
+div.noti.active {
+  animation: slide-in 500ms var(--notiAnimation);
+}
+
+div.noti.inactive {
+  animation: slide-out 500ms var(--notiAnimation);
+}
+
+.noti + .noti {
+  margin-top: 4px;
+}
+
+div.noti.active:hover {
+  opacity: 1;
+}
+
+div.noti.success {
+  color: white;
+  background-color: rgb(74, 185, 139);
+}
+
+div.noti.error {
+  color: white;
+  background-color: rgb(184, 79, 79);
+}
+
+div.noti span {
+  position: absolute;
+  text-align: center;
+  padding: 0px;
+  margin: 0;
+  top: 5px;
+  right: 8px;
+  color: gray;
+  cursor: pointer;
+}
+
+div.noti span:hover {
+  color: red;
 }
 
 /* Inbox */
@@ -511,7 +839,6 @@ div.convos {
 
 p.timestamp {
   font-size: 10px;
-  font-style: italic;
   text-align: right;
 }
 
@@ -519,22 +846,32 @@ p.username {
   font-weight: 700;
 }
 
-p.title {
+p.title,
+p.timestamp {
   font-style: italic;
-  margin: 4px 0px
 }
 
-p.content {
+p.content,
+p.title {
   margin: 4px 0px;
 }
 
 div.inboxList {
   padding: 6px;
   font-size: 14px;
+  position: relative;
+  border-radius: var(--roundedCorner);
 }
 
-div.inboxList:nth-child(n+1) {
-  margin-bottom: 6px;
+div.delete-Btn {
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  color: red;
+}
+
+div:nth-child(n + 2 of .inboxList) {
+  margin-top: 6px;
 }
 
 div.inboxList.read {
@@ -544,7 +881,6 @@ div.inboxList.read {
 div.inboxList.unread {
   background-color: rgb(164, 164, 252);
   font-weight: 700;
-
 }
 
 div.inboxReply {
@@ -554,13 +890,17 @@ div.inboxReply {
 }
 
 div.convoChain {
-  flex: 12;
+  flex: 15;
   display: flex;
-  padding: 0 6px;
+  padding: 0;
   flex-direction: column;
   overflow-y: auto;
   justify-content: space-evenly;
   flex-wrap: nowrap;
+  overflow: hidden auto;
+  max-height: 80vh;
+  gap: 10px;
+  position: relative;
 }
 
 div.convoChain h1 {
@@ -568,16 +908,23 @@ div.convoChain h1 {
 }
 
 form#replyForm {
-  display: block;
-  flex: 1;
-  width: 100%;
-  margin: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex: 1 1 2em;
+  width: calc(100% - 2px);
+  margin: 0 2px;
+  padding: 0 25px;
 }
 
 div.inboxItem {
   padding: 8px;
   height: fit-content;
-  border-radius: 8px;
+  width: min(20em, 25%);
+  border-radius: var(--roundedCorner);
+  margin: 12px;
+  box-shadow: var(--boxShadow);
 }
 
 div.inboxItem.left {
@@ -587,7 +934,7 @@ div.inboxItem.left {
 
 div.inboxItem.right {
   align-self: flex-end;
-  background-color: rgb(177, 177, 177);
+  background-color: rgb(208, 204, 219);
 }
 
 div.empty {
@@ -595,55 +942,163 @@ div.empty {
   background-color: rgb(177, 177, 177);
 }
 
-div.dropdown {
-  border-bottom: 1px solid black;
+div.dropDown {
+  box-shadow: var(--boxShadow);
   background-color: white;
   transition: all ease-in-out 50ms;
   z-index: 10;
   position: absolute;
+  padding: 2px 1em;
+  border-radius: var(--roundedCorner);
 }
 
-div.dropdown > p,
-div.convoList {
+div.inboxList > p {
   margin: 5px 0;
   cursor: pointer;
 }
 
-div.dropdown > p:hover,
 div.inboxList:hover {
-  background-color: rgb(177, 177, 177);
+  background-color: rgb(193, 232, 255);
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
 }
 
-button.closeMsg,
-button.newMsg {
+div.dropDown > p:hover {
+  font-style: italic;
+  cursor: pointer;
+  transition: all 200ms ease-in-out;
+  color: var(--logoFontColor);
+}
+
+div.convos h2 {
+  margin: 20px 0;
+}
+
+div.convos > span {
   z-index: 10;
   position: absolute;
   height: 2em;
   width: 2em;
-  top: 5%;
+  top: calc(20px + 0.75em);
   right: 5%;
   border-radius: 50%;
   transition: all ease-in-out 100ms;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-button.closeMsg {
-  background-color: rgb(247, 128, 128);
+@keyframes spinDown {
+  from {
+    transform-origin: center;
+    transform: rotate(-90deg);
+  }
+  to {
+    transform-origin: center;
+    transform: rotate(0deg);
+  }
 }
 
-button.newMsg {
-  background-color: rgb(137, 137, 252);
+@keyframes spinBack {
+  from {
+    transform-origin: center;
+    transform: rotate(0deg);
+  }
+  to {
+    transform-origin: center;
+    transform: rotate(-90deg);
+  }
+}
+
+span.openSearch svg {
+  animation: spinBack 200ms linear;
+  cursor: pointer;
+  transform-origin: center;
+  transform: rotate(-90deg);
+}
+
+span.closeSearch svg {
+  animation: spinDown 200ms linear;
+  cursor: pointer;
+  transform-origin: center;
+  transform: rotate(0);
 }
 
 @keyframes grow {
   from {
     width: 0px;
+    height: 0px;
+    opacity: 0;
   }
   to {
     width: 100%;
+    opacity: 1;
   }
 }
 
 input.friendSearch {
   animation: grow 500ms ease-in;
   width: 100%;
+}
+
+div.friendSearchContainer {
+  position: relative;
+  overflow: visible;
+}
+
+div.dropDown {
+  position: absolute;
+  z-index: 5;
+  width: 100%;
+  height: fit-content;
+  max-height: 40vh;
+  overflow: auto;
+  animation: grow 500ms ease-in;
+}
+
+div.dropDown > p {
+  margin: 6px;
+  position: relative;
+}
+
+div.dropDown > h5 {
+  margin: 10px 0;
+}
+
+div.dropDown > button {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  border: none;
+  background-color: transparent;
+  color: red;
+}
+
+@keyframes hop {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+div.dropDown > button:hover {
+  animation: hop 200ms ease-in;
+}
+
+div.dropDown > p > div.post-icon,
+div.dropDown > p > div.default-icon {
+  position: absolute;
+  right: 5px;
+  top: 0px;
+  height: 25px;
+  width: 25px;
+  font-size: 0.75rem;
 }

@@ -4,6 +4,7 @@ import {
   editAccount,
   editIcon,
   getIcon,
+  googleAuth,
 } from "../utils/dataAccess";
 import FriendsList from "./FriendsList";
 import PostCard from "./postCard";
@@ -155,6 +156,14 @@ export default function Account() {
     });
   }
 
+  async function handleGoogle() {
+    console.log('testing google')
+    const gData = await googleAuth()
+    console.log(gData)
+    if (gData.err) return //err noti
+    else return //success noti
+  }
+
   /* constants, conditionals */
 
   const myPosts =
@@ -169,7 +178,7 @@ export default function Account() {
         })}
       </div>
     ) : (
-      <p>Nothing's here... Try posting something!</p>
+      <p className="feed acct">Nothing's here... Try posting something!</p>
     );
 
   const imgSettings = editting ? (
@@ -182,16 +191,18 @@ export default function Account() {
         onChange={handleChangeIcon}
         autoComplete="photo"
       />
-      <p>Preview: </p>
       {previewIcon.url ? (
-        <img className="icon" alt='Current icon' src={previewIcon.url} />
-      ) : (
-        <img className="icon" alt="Updated icon" src={iconBlob} />
-      )}
-      <button type="button" onClick={() => setPreviewIcon(previewTemplate)}>
-        Clear
-      </button>
-      <p>Size: {previewIcon.size}</p>
+        <span>
+          <p>Preview: </p>
+          <div className="icon">
+            <img className="icon" alt='Current icon' src={previewIcon.url} />
+            <button type="button" onClick={() => setPreviewIcon(previewTemplate)}>
+              Clear
+            </button>
+            <p>Size: {previewIcon.size}</p>
+          </div>
+        </span>
+      ) : null}
     </div>
   ) : iconBlob ? (
     <img className="icon" alt="Current icon" src={iconBlob} />
@@ -241,11 +252,13 @@ export default function Account() {
 
         <div className="icon-acct">
           <p>Change Icon: </p>
-          <div className="icon">{imgSettings}</div>
+          <div className="icon-settings">{imgSettings}</div>
         </div>
         <button type="submit" onClick={handleSubmit}>
           Submit
         </button>
+        <p>Add Google acccount!</p>
+        <button type="button" onClick={handleGoogle}>G!</button>
       </form>
     )
 
@@ -269,6 +282,7 @@ export default function Account() {
             <Icons iconName={editting ? "delete" : "edit"} />
           </span>
         </div>
+        <h1>Friends List</h1>
         {friendsListDiv}
       </div>
       {myPosts}

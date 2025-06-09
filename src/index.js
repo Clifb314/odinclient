@@ -9,6 +9,7 @@ import App from './App';
 import ErrorPage from './components/errorPage'
 import {UserPage, Register, Feed, Inbox, Account, Login} from './utils/exporter'
 import { checkUser } from './utils/auth';
+import Welcome from './components/welcomePage';
 //const root = ReactDOM.createRoot(document.getElementById('root'));
 // root.render(
 //   <React.StrictMode>
@@ -26,7 +27,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: null //a homepage
+        element: <Welcome />
       },
       {
         path: 'users/:userid',
